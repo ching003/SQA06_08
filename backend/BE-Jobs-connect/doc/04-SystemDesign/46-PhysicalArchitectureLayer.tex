@@ -1,0 +1,95 @@
+% Section 4.6 - Kiến trúc vật lý
+\section{Kiến trúc vật lý}
+\label{sec:physical-architecture-layer}
+
+Phần này trình bày kiến trúc vật lý của hệ thống, bao gồm sơ đồ triển khai (deployment diagram), các thành phần hạ tầng và các yêu cầu phi chức năng liên quan đến vận hành. Kiến trúc vật lý mô tả cách các thành phần phần mềm được triển khai trên các nút vật lý và mối quan hệ giữa chúng.
+
+\subsection{Sơ đồ triển khai}
+\label{subsec:deployment-diagram}
+
+Hệ thống được thiết kế theo mô hình kiến trúc phân tán (distributed architecture) với các thành phần được tách biệt theo chức năng. Thiết kế này đảm bảo tính độc lập giữa các thành phần, cho phép mở rộng và bảo trì từng phần một cách độc lập.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/46/DeploymentDiagram.png}
+	\caption{Sơ đồ triển khai hệ thống}
+    \label{fig:deployment-diagram}
+\end{figure}
+
+\subsection{Các thành phần hệ thống}
+\label{subsec:system-components}
+
+Hệ thống bao gồm năm thành phần chính, mỗi thành phần đảm nhận một vai trò cụ thể trong kiến trúc tổng thể. Bảng \ref{tab:physical-components} mô tả chi tiết các thành phần cùng công nghệ được sử dụng.
+
+\begin{table}[H]
+\centering
+\caption{Các thành phần trong kiến trúc vật lý}
+\label{tab:physical-components}
+\begin{tabular}{|p{3cm}|p{3cm}|p{6cm}|}
+\hline
+\textbf{Thành phần} & \textbf{Công nghệ} & \textbf{Mô tả} \\
+\hline
+Client & React, Vite & Ứng dụng web Single Page Application (SPA) chạy trên trình duyệt người dùng \\
+\hline
+API Server & Node.js, Express & Backend server xử lý logic nghiệp vụ và cung cấp RESTful API \\
+\hline
+Database & PostgreSQL & Hệ quản trị cơ sở dữ liệu quan hệ lưu trữ dữ liệu hệ thống \\
+\hline
+AI Service & Python, FastAPI & Dịch vụ xử lý embedding và tính toán gợi ý việc làm \\
+\hline
+File Storage & Firebase Storage & Dịch vụ lưu trữ file đa phương tiện (ảnh, CV PDF, tài liệu) \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Luồng giao tiếp}
+\label{subsec:communication-flow}
+
+Các thành phần trong hệ thống giao tiếp với nhau thông qua các giao thức chuẩn. Dưới đây mô tả chi tiết luồng giao tiếp giữa các thành phần:
+
+\begin{enumerate}
+    \item \textbf{Client -- API Server}: Client gửi HTTP request đến API Server thông qua RESTful API. Mọi request (trừ các endpoint công khai như đăng nhập, đăng ký) đều phải được xác thực bằng JWT token trong header Authorization.
+
+    \item \textbf{API Server -- Database}: API Server sử dụng Prisma ORM để thực hiện các thao tác truy vấn và cập nhật dữ liệu trong PostgreSQL. Prisma cung cấp lớp trừu tượng type-safe, đảm bảo tính nhất quán giữa mô hình dữ liệu và schema cơ sở dữ liệu.
+
+    \item \textbf{API Server -- AI Service}: Khi cần tính toán vector embedding hoặc lấy danh sách gợi ý, API Server gọi đến AI Service thông qua HTTP. AI Service xử lý các tác vụ machine learning và trả về kết quả.
+
+    \item \textbf{API Server -- File Storage}: Việc upload và download file được thực hiện thông qua Firebase Storage SDK. API Server xử lý logic nghiệp vụ liên quan đến file, trong khi việc lưu trữ vật lý được ủy quyền cho dịch vụ đám mây.
+\end{enumerate}
+
+\subsection{Yêu cầu phi chức năng}
+\label{subsec:nfr-physical}
+
+Kiến trúc vật lý được thiết kế để đáp ứng các yêu cầu phi chức năng quan trọng của hệ thống.
+
+\subsubsection{Hiệu năng}
+
+Hệ thống được thiết kế để đảm bảo các chỉ số hiệu năng sau:
+
+\begin{itemize}
+    \item \textbf{Thời gian phản hồi API}: Dưới 500ms cho các thao tác thông thường (CRUD operations). Các thao tác phức tạp như tính toán gợi ý có thể yêu cầu thời gian dài hơn.
+    \item \textbf{Thời gian tải trang}: Dưới 3 giây cho lần tải đầu tiên (First Contentful Paint).
+    \item \textbf{Khả năng xử lý đồng thời}: Hỗ trợ tối thiểu 1000 người dùng đồng thời.
+\end{itemize}
+
+\subsubsection{Bảo mật}
+
+Các biện pháp bảo mật được áp dụng ở nhiều tầng của kiến trúc:
+
+\begin{itemize}
+    \item \textbf{Mã hóa truyền tải}: HTTPS/TLS cho mọi kết nối giữa client và server.
+    \item \textbf{Xác thực token}: JWT với thời hạn ngắn (15 phút cho access token, 7 ngày cho refresh token) để giảm thiểu rủi ro khi token bị đánh cắp.
+    \item \textbf{Mã hóa mật khẩu}: Sử dụng thuật toán bcrypt với salt factor phù hợp.
+    \item \textbf{Rate limiting}: Giới hạn số lượng request từ một IP trong khoảng thời gian để chống tấn công DDoS và brute force.
+\end{itemize}
+
+\subsubsection{Khả năng mở rộng}
+
+Kiến trúc được thiết kế với khả năng mở rộng theo chiều ngang (horizontal scaling):
+
+\begin{itemize}
+    \item \textbf{Stateless architecture}: API Server không lưu trữ session state, cho phép triển khai nhiều instance và phân phối tải qua load balancer.
+    \item \textbf{Database connection pooling}: Sử dụng connection pool để tối ưu hóa việc sử dụng kết nối đến cơ sở dữ liệu.
+    \item \textbf{Caching layer}: Có thể tích hợp Redis làm lớp cache để giảm tải cho database và cải thiện thời gian phản hồi.
+\end{itemize}
+

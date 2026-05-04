@@ -1,0 +1,854 @@
+{
+  "info": {
+    "_postman_id": "jobsconnect-cv-api-001",
+    "name": "JobsConnect - CV API",
+    "description": "Collection cho các API CV của JobsConnect Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "CV Management",
+      "item": [
+        {
+          "name": "Create CV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"cv_id\", response.data.id);",
+                  "        if (response.data.templateId) {",
+                  "            pm.environment.set(\"cv_template_id\", response.data.templateId);",
+                  "        }",
+                  "        if (response.data.template) {",
+                  "            console.log(\"Template: \" + response.data.template.name);",
+                  "        }",
+                  "        console.log(\"✅ CV created successfully\");",
+                  "        console.log(\"CV ID: \" + response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"My Professional CV\",\n    \"fullName\": \"Nguyen Van A\",\n    \"email\": \"{{user_email}}\",\n    \"phoneNumber\": \"0123456789\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"gender\": \"MALE\",\n    \"address\": \"123 Main Street, Ho Chi Minh City\",\n    \"currentPosition\": \"Senior Software Engineer\",\n    \"summary\": \"Experienced software engineer with 5+ years of experience in web development.\",\n    \"objective\": \"Seeking a challenging position in software development.\",\n    \"isOpenForJob\": true,\n    \"templateId\": \"{{template_id}}\",\n    \"educations\": [\n        {\n            \"institution\": \"Ho Chi Minh University of Technology\",\n            \"degree\": \"Bachelor of Computer Science\",\n            \"startDate\": \"2010-09-01\",\n            \"endDate\": \"2014-06-30\",\n            \"description\": \"Graduated with honors\"\n        }\n    ],\n    \"workExperiences\": [\n        {\n            \"title\": \"Senior Software Engineer\",\n            \"company\": \"Tech Corp\",\n            \"startDate\": \"2019-01-01\",\n            \"endDate\": null,\n            \"description\": \"Lead development of web applications using Node.js and React\"\n        },\n        {\n            \"title\": \"Software Engineer\",\n            \"company\": \"StartupXYZ\",\n            \"startDate\": \"2016-06-01\",\n            \"endDate\": \"2018-12-31\",\n            \"description\": \"Developed and maintained RESTful APIs\"\n        }\n    ],\n    \"skills\": [\n        {\n            \"skillName\": \"JavaScript\",\n            \"level\": \"EXPERT\",\n            \"yearsOfExperience\": 5\n        },\n        {\n            \"skillName\": \"Node.js\",\n            \"level\": \"ADVANCED\",\n            \"yearsOfExperience\": 4\n        },\n        {\n            \"skillName\": \"React\",\n            \"level\": \"ADVANCED\",\n            \"yearsOfExperience\": 3\n        }\n    ],\n    \"projects\": [\n        {\n            \"name\": \"E-commerce Platform\",\n            \"description\": \"Full-stack e-commerce application\",\n            \"startDate\": \"2020-01-01\",\n            \"endDate\": \"2020-06-30\",\n            \"url\": \"https://example.com/project\",\n            \"role\": \"Full-stack Developer\"\n        }\n    ],\n    \"certifications\": [\n        {\n            \"name\": \"AWS Certified Developer\",\n            \"issuer\": \"Amazon Web Services\",\n            \"acquiredAt\": \"2021-03-15\",\n            \"description\": \"Associate level certification\"\n        }\n    ],\n    \"languages\": [\n        {\n            \"name\": \"English\",\n            \"level\": \"ADVANCED\",\n            \"description\": \"Fluent in speaking and writing\"\n        },\n        {\n            \"name\": \"Vietnamese\",\n            \"level\": \"NATIVE\",\n            \"description\": \"Native speaker\"\n        }\n    ],\n    \"achievements\": [\n        {\n            \"title\": \"Best Employee of the Year\",\n            \"description\": \"Awarded for outstanding performance\",\n            \"acquiredAt\": \"2022-12-31\"\n        }\n    ],\n    \"activities\": [\n        {\n            \"title\": \"Open Source Contributor\",\n            \"organization\": \"GitHub Community\",\n            \"startDate\": \"2018-01-01\",\n            \"endDate\": null,\n            \"description\": \"Contributed to various open source projects\"\n        }\n    ],\n    \"references\": [\n        {\n            \"name\": \"John Doe\",\n            \"position\": \"CTO\",\n            \"company\": \"Tech Corp\",\n            \"description\": \"Former manager\"\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cvs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs"]
+            },
+            "description": "Tạo CV mới với đầy đủ thông tin. Có thể chỉ định templateId để liên kết CV với CV Template (optional)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get CV By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response has CV data\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('id');",
+                  "    pm.expect(response.data).to.have.property('title');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        if (response.data.templateId) {",
+                  "            pm.environment.set(\"cv_template_id\", response.data.templateId);",
+                  "            console.log(\"Template ID: \" + response.data.templateId);",
+                  "        }",
+                  "        if (response.data.template) {",
+                  "            console.log(\"Template: \" + response.data.template.name);",
+                  "            console.log(\"Template HTML URL: \" + response.data.template.htmlUrl);",
+                  "        }",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}"]
+            },
+            "description": "Lấy thông tin chi tiết CV theo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All CVs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data array\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs?page=1&limit=10&orderBy=createdAt:desc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "userId",
+                  "value": "",
+                  "description": "Optional: Filter by user ID (ADMIN/RECRUITER only)",
+                  "disabled": true
+                },
+                {
+                  "key": "isOpenForJob",
+                  "value": "true",
+                  "description": "Optional: Filter by isOpenForJob (true/false)",
+                  "disabled": true
+                },
+                {
+                  "key": "orderBy",
+                  "value": "createdAt:desc",
+                  "description": "Optional: Order by field:direction (e.g., createdAt:desc)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách CVs với pagination. Non-admin users chỉ thấy CVs của mình, ADMIN/RECRUITER thấy tất cả."
+          },
+          "response": []
+        },
+        {
+          "name": "Get CVs By User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs/user/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "user", "{{user_id}}"]
+            },
+            "description": "Lấy tất cả CVs của một user"
+          },
+          "response": []
+        },
+        {
+          "name": "Update CV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated Professional CV\",\n    \"fullName\": \"Nguyen Van A Updated\",\n    \"currentPosition\": \"Lead Software Engineer\",\n    \"summary\": \"Updated summary with more experience.\",\n    \"templateId\": \"{{template_id}}\",\n    \"skills\": [\n        {\n            \"skillName\": \"JavaScript\",\n            \"level\": \"EXPERT\",\n            \"yearsOfExperience\": 6\n        },\n        {\n            \"skillName\": \"Node.js\",\n            \"level\": \"EXPERT\",\n            \"yearsOfExperience\": 5\n        },\n        {\n            \"skillName\": \"React\",\n            \"level\": \"ADVANCED\",\n            \"yearsOfExperience\": 4\n        },\n        {\n            \"skillName\": \"TypeScript\",\n            \"level\": \"ADVANCED\",\n            \"yearsOfExperience\": 2\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}"]
+            },
+            "description": "Cập nhật CV (user chỉ có thể update CV của chính mình, ADMIN có thể update bất kỳ). Có thể cập nhật templateId để thay đổi template liên kết với CV (optional)."
+          },
+          "response": []
+        },
+        {
+          "name": "Set CV As Main",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"CV is set as main\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.isMain).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}/main",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}", "main"]
+            },
+            "description": "Đặt CV làm CV chính (sẽ tự động unset các CV khác)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete CV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}"]
+            },
+            "description": "Xóa CV (chỉ có thể xóa nếu CV không có Application)"
+          },
+          "response": []
+        },
+        {
+          "name": "Duplicate CV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"duplicated_cv_id\", response.data.id);",
+                  "        console.log(\"CV duplicated successfully\");",
+                  "        console.log(\"New CV ID: \" + response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"newTitle\": \"My CV (Copy)\",\n    \"isOpenForJob\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}/duplicate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}", "duplicate"]
+            },
+            "description": "Duplicate CV hiện tại. Chỉ owner của CV mới có quyền duplicate."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CV Export",
+      "item": [
+        {
+          "name": "Export CV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.exportUrl) {",
+                  "        pm.environment.set(\"cv_export_url\", response.data.exportUrl);",
+                  "        console.log(\"✅ CV exported successfully\");",
+                  "        console.log(\"Export URL: \" + response.data.exportUrl);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"templateId\": \"{{template_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}/export",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}", "export"]
+            },
+            "description": "Xuất CV ra HTML/PDF sử dụng template. Cần có template_id trong environment."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Saved CV (Recruiter Only)",
+      "item": [
+        {
+          "name": "Save CV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ CV saved successfully\");",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notes\": \"Ứng viên tiềm năng cho vị trí Senior Developer\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}/save",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}", "save"]
+            },
+            "description": "Lưu CV vào danh sách yêu thích của recruiter. Chỉ RECRUITER và ADMIN có quyền."
+          },
+          "response": []
+        },
+        {
+          "name": "Unsave CV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}/save",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}", "save"]
+            },
+            "description": "Bỏ lưu CV khỏi danh sách yêu thích của recruiter."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Saved CVs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data array\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs/saved?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "saved"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Lấy danh sách CVs đã lưu của recruiter với pagination."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Saved CV Notes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notes\": \"Cập nhật: Đã phỏng vấn vòng 1, kết quả tốt\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}/save/notes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}", "save", "notes"]
+            },
+            "description": "Cập nhật ghi chú cho CV đã lưu."
+          },
+          "response": []
+        },
+        {
+          "name": "Check CV Saved",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has isSaved field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('isSaved');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs/{{cv_id}}/saved",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "{{cv_id}}", "saved"]
+            },
+            "description": "Kiểm tra CV đã được lưu chưa."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CV Search (Recruiter/Admin Only)",
+      "item": [
+        {
+          "name": "Search CVs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data array\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cvs/search?query=JavaScript&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cvs", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "JavaScript",
+                  "description": "Search query"
+                },
+                {
+                  "key": "skills",
+                  "value": "JavaScript,Node.js",
+                  "description": "Filter by skills (comma-separated)",
+                  "disabled": true
+                },
+                {
+                  "key": "location",
+                  "value": "Ho Chi Minh City",
+                  "description": "Filter by location",
+                  "disabled": true
+                },
+                {
+                  "key": "educationLevel",
+                  "value": "Bachelor",
+                  "description": "Filter by education level",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Tìm kiếm CVs (chỉ RECRUITER và ADMIN có quyền)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recommended CVs for Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data array\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/recommended-cvs?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "recommended-cvs"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of recommended CVs"
+                }
+              ]
+            },
+            "description": "Lấy danh sách CVs được gợi ý cho một job (chỉ RECRUITER và ADMIN có quyền). Cần có job_id trong environment."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    }
+  ]
+}

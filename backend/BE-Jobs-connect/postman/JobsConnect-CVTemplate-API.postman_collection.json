@@ -1,0 +1,468 @@
+{
+  "info": {
+    "_postman_id": "jobsconnect-cv-template-api-001",
+    "name": "JobsConnect - CV Template API",
+    "description": "Collection cho các API CVTemplate của JobsConnect Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public Endpoints",
+      "item": [
+        {
+          "name": "Get Active Templates",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data array\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.length > 0) {",
+                  "        pm.environment.set(\"template_id\", response.data[0].id);",
+                  "        console.log(\"✅ Active templates retrieved\");",
+                  "        console.log(\"First template ID: \" + response.data[0].id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/cv-templates/active?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cv-templates", "active"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Lấy danh sách templates đang active (public, không cần authentication)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Template Management (Admin Only)",
+      "item": [
+        {
+          "name": "Create Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"template_id\", response.data.id);",
+                  "        console.log(\"✅ Template created successfully\");",
+                  "        console.log(\"Template ID: \" + response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "New Template",
+                  "type": "text",
+                  "description": "Template name (required)"
+                },
+                {
+                  "key": "template",
+                  "type": "file",
+                  "src": [],
+                  "description": "HTML template file (optional - can use htmlUrl instead)"
+                },
+                {
+                  "key": "htmlUrl",
+                  "value": "",
+                  "type": "text",
+                  "description": "HTML URL (optional - can upload file instead)",
+                  "disabled": true
+                },
+                {
+                  "key": "preview",
+                  "type": "file",
+                  "src": [],
+                  "description": "Preview image file (optional - can use previewUrl instead)"
+                },
+                {
+                  "key": "previewUrl",
+                  "value": "",
+                  "type": "text",
+                  "description": "Preview image URL (optional - can upload file instead)",
+                  "disabled": true
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "description": "Is template active (default: true)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cv-templates",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cv-templates"]
+            },
+            "description": "Tạo template mới (Admin only). Có thể upload file HTML hoặc cung cấp htmlUrl. Nếu upload file, file sẽ được lưu trên Firebase Storage và URL sẽ được tự động tạo."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Templates",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cv-templates?page=1&limit=10&isActive=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cv-templates"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "description": "Filter by active status",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lấy danh sách tất cả templates với pagination (Admin only). Bao gồm cả active và inactive templates."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Template By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response has template data\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data).to.have.property('id');",
+                  "    pm.expect(response.data).to.have.property('name');",
+                  "    pm.expect(response.data).to.have.property('htmlUrl');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cv-templates/{{template_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cv-templates", "{{template_id}}"]
+            },
+            "description": "Lấy thông tin template theo ID (authenticated)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Updated Template Name",
+                  "type": "text",
+                  "description": "Template name (optional)"
+                },
+                {
+                  "key": "template",
+                  "type": "file",
+                  "src": [],
+                  "description": "New HTML template file (optional - will update htmlUrl)",
+                  "disabled": true
+                },
+                {
+                  "key": "htmlUrl",
+                  "value": "",
+                  "type": "text",
+                  "description": "New HTML URL (optional - can upload file instead)",
+                  "disabled": true
+                },
+                {
+                  "key": "preview",
+                  "type": "file",
+                  "src": [],
+                  "description": "New preview image file (optional - will update previewUrl)",
+                  "disabled": true
+                },
+                {
+                  "key": "previewUrl",
+                  "value": "",
+                  "type": "text",
+                  "description": "New preview image URL (optional - can upload file instead)",
+                  "disabled": true
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "description": "Is template active (optional)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cv-templates/{{template_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cv-templates", "{{template_id}}"]
+            },
+            "description": "Cập nhật template (Admin only). Có thể upload file HTML mới hoặc cung cấp htmlUrl mới. Nếu upload file, file sẽ được lưu trên Firebase Storage và URL sẽ được tự động cập nhật."
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Template is active\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.isActive).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cv-templates/{{template_id}}/activate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cv-templates", "{{template_id}}", "activate"]
+            },
+            "description": "Activate template (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Template is inactive\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.data.isActive).to.be.false;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cv-templates/{{template_id}}/deactivate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cv-templates", "{{template_id}}", "deactivate"]
+            },
+            "description": "Deactivate template (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cv-templates/{{template_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cv-templates", "{{template_id}}"]
+            },
+            "description": "Xóa template (Admin only). Chỉ có thể xóa nếu không có CV nào đang sử dụng template này."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    }
+  ]
+}

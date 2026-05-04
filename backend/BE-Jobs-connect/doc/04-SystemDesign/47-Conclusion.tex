@@ -1,0 +1,22 @@
+% Section 4.7 - Kết luận
+\section{Kết luận}
+\label{sec:design-conclusion}
+
+Chương này đã trình bày toàn diện giai đoạn thiết kế hệ thống kết nối việc làm, từ kiến trúc tổng thể đến các chi tiết triển khai cụ thể. Các nội dung chính được đề cập bao gồm:
+
+\textbf{Kiến trúc và phân tầng.} Hệ thống được thiết kế theo mô hình Clean Architecture với bốn tầng rõ ràng: Domain, Application, Infrastructure và Presentation. Việc áp dụng kiến trúc này đảm bảo tính tách biệt mối quan tâm (Separation of Concerns), tuân thủ nguyên tắc Dependency Rule và Dependency Inversion, tạo nền tảng cho một hệ thống có khả năng bảo trì và mở rộng cao.
+
+\textbf{Tổ chức Package.} Các lớp đối tượng được phân chia thành bảy package dựa trên nguyên tắc cohesion và coupling, đảm bảo tính module hóa và giảm thiểu phụ thuộc chéo giữa các thành phần.
+
+\textbf{Thiết kế chi tiết theo tầng.} Mỗi tầng trong kiến trúc được thiết kế với các thành phần cụ thể: Repository Interfaces và Service Interfaces ở tầng Domain; Use Cases và DTOs ở tầng Application; các implementation classes ở tầng Infrastructure; Controllers và Middlewares ở tầng Presentation.
+
+\textbf{Thiết kế lớp và phương thức.} Các lớp đối tượng được mô tả chi tiết với thuộc tính, phương thức, ràng buộc và hợp đồng (precondition, postcondition), cung cấp đặc tả đầy đủ cho giai đoạn lập trình.
+
+\textbf{Thiết kế cơ sở dữ liệu.} Sơ đồ ORM và ERD được xây dựng để thể hiện cấu trúc dữ liệu và mối quan hệ giữa các bảng, đảm bảo tính toàn vẹn và hiệu quả trong lưu trữ dữ liệu.
+
+\textbf{Thiết kế giao diện người dùng.} Các màn hình chính được thiết kế cho từng actor (Ứng viên, Nhà tuyển dụng, Quản trị viên), hướng đến trải nghiệm người dùng trực quan và thân thiện.
+
+\textbf{Kiến trúc vật lý.} Hệ thống được thiết kế theo mô hình phân tán với các thành phần: Client (React), API Server (Node.js), Database (PostgreSQL), AI Service (FastAPI) và File Storage (Firebase). Kiến trúc này đáp ứng các yêu cầu về hiệu năng, bảo mật và khả năng mở rộng.
+
+Tổng kết, chương này đã cung cấp một thiết kế chi tiết, có hệ thống và khả thi cho hệ thống tuyển dụng trực tuyến tích hợp trí tuệ nhân tạo. Các quyết định thiết kế được đưa ra dựa trên các nguyên tắc công nghệ phần mềm đã được chứng minh, tạo nền tảng vững chắc cho giai đoạn triển khai tiếp theo.
+

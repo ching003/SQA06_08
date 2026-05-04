@@ -1,0 +1,322 @@
+% Section 4.2 - Thiết kế chi tiết theo tầng
+\section{Thiết kế chi tiết theo tầng}
+\label{sec:layered-design}
+
+Dựa trên mô hình Clean Architecture đã trình bày ở Mục \ref{sec:architecture}, phần này mô tả chi tiết thiết kế các thành phần trong từng tầng của hệ thống. Việc thiết kế tuân thủ nghiêm ngặt nguyên tắc Dependency Rule, đảm bảo các tầng bên ngoài chỉ phụ thuộc vào các tầng bên trong thông qua các giao diện trừu tượng.
+
+\subsection{Tầng Domain}
+\label{subsec:domain-layer-design}
+
+Tầng Domain đóng vai trò là lõi của hệ thống, chứa các thực thể nghiệp vụ (Entities) và các quy tắc nghiệp vụ thuần túy. Đặc điểm quan trọng nhất của tầng này là tính độc lập hoàn toàn với bất kỳ framework hay công nghệ cụ thể nào, đảm bảo logic nghiệp vụ có thể được kiểm thử và tái sử dụng trong các ngữ cảnh khác nhau.
+
+\subsubsection{Thực thể nghiệp vụ}
+
+Các thực thể trong tầng Domain đã được định nghĩa chi tiết ở Mục \ref{sec:class-method-design}, bao gồm: \texttt{User}, \texttt{CV}, \texttt{Job}, \texttt{Company}, \texttt{Application} cùng các lớp liên quan. Mỗi thực thể đóng gói dữ liệu và hành vi nghiệp vụ liên quan, tuân thủ nguyên tắc đóng gói trong lập trình hướng đối tượng.
+
+\subsubsection{Giao diện Repository}
+
+Để đảm bảo nguyên tắc Dependency Inversion trong SOLID \cite{martin2003agile}, tầng Domain định nghĩa các giao diện Repository trừu tượng hóa việc truy xuất dữ liệu. Các thành phần ở tầng trên chỉ phụ thuộc vào interface, không phụ thuộc vào cài đặt cụ thể.
+
+\begin{table}[H]
+\centering
+\caption{Các giao diện Repository trong tầng Domain}
+\label{tab:repository-interfaces}
+\begin{tabular}{|p{5cm}|p{7cm}|}
+\hline
+\textbf{Giao diện} & \textbf{Trách nhiệm} \\
+\hline
+IUserRepository & Quản lý truy xuất và lưu trữ thông tin người dùng \\
+\hline
+ICVRepository & Quản lý truy xuất và lưu trữ hồ sơ ứng viên \\
+\hline
+IJobRepository & Quản lý truy xuất và lưu trữ tin tuyển dụng \\
+\hline
+ICompanyRepository & Quản lý truy xuất và lưu trữ thông tin công ty \\
+\hline
+ICompanyMemberRepository & Quản lý thành viên trong công ty \\
+\hline
+ICompanyMemberInvitationRepository & Quản lý lời mời tham gia công ty \\
+\hline
+IApplicationRepository & Quản lý truy xuất và lưu trữ đơn ứng tuyển \\
+\hline
+ISavedJobRepository & Quản lý công việc đã lưu của ứng viên \\
+\hline
+ISavedCVRepository & Quản lý CV đã lưu của nhà tuyển dụng \\
+\hline
+INotificationRepository & Quản lý truy xuất và lưu trữ thông báo \\
+\hline
+ICVTemplateRepository & Quản lý mẫu CV để xuất PDF \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Giao diện Service}
+
+Bên cạnh Repository, tầng Domain còn định nghĩa các giao diện cho các dịch vụ hạ tầng. Thiết kế này cho phép thay thế các cài đặt cụ thể mà không ảnh hưởng đến logic nghiệp vụ.
+
+\begin{table}[H]
+\centering
+\caption{Các giao diện Service trong tầng Domain}
+\label{tab:service-interfaces}
+\begin{tabular}{|p{4cm}|p{8cm}|}
+\hline
+\textbf{Giao diện} & \textbf{Trách nhiệm} \\
+\hline
+IPasswordService & Thực hiện mã hóa và xác thực mật khẩu \\
+\hline
+ITokenService & Tạo và xác thực JWT token cho xác thực \\
+\hline
+IStorageService & Quản lý lưu trữ và truy xuất file đa phương tiện \\
+\hline
+IFileStorageService & Quản lý upload và download file lên cloud storage \\
+\hline
+INotificationService & Gửi thông báo realtime qua Firebase \\
+\hline
+IPDFService & Tạo file PDF từ CV \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/42/DomainLayer.png}
+	\caption{Sơ đồ lớp tầng Domain}
+    \label{fig:domain-layer}
+\end{figure}
+
+\subsection{Tầng Application}
+\label{subsec:application-layer-design}
+
+Tầng Application chứa các Use Case điều phối luồng nghiệp vụ của ứng dụng. Theo định nghĩa của Martin \cite{martin2017clean}, mỗi Use Case đại diện cho một hành động cụ thể mà hệ thống cung cấp cho người dùng, đóng gói tất cả logic cần thiết để hoàn thành hành động đó.
+
+\subsubsection{Các Use Case}
+
+Các Use Case được tổ chức theo module chức năng, mỗi module tương ứng với một miền nghiệp vụ cụ thể. Bảng \ref{tab:use-cases} liệt kê các Use Case chính trong hệ thống.
+
+\begin{table}[H]
+\centering
+\caption{Các Use Case chính trong hệ thống}
+\label{tab:use-cases}
+\begin{tabular}{|p{2.5cm}|p{4.5cm}|p{5cm}|}
+\hline
+\textbf{Module} & \textbf{Use Case} & \textbf{Chức năng} \\
+\hline
+\multirow{3}{*}{User} & CreateUserUseCase & Xử lý đăng ký tài khoản mới \\
+\cline{2-3}
+& LoginUserUseCase & Xử lý đăng nhập hệ thống \\
+\cline{2-3}
+& ChangePasswordUseCase & Xử lý thay đổi mật khẩu \\
+\hline
+\multirow{4}{*}{CV} & CreateCVUseCase & Tạo hồ sơ ứng viên mới \\
+\cline{2-3}
+& UpdateCVUseCase & Cập nhật thông tin hồ sơ \\
+\cline{2-3}
+& ExportCVUseCase & Xuất hồ sơ ra định dạng PDF \\
+\cline{2-3}
+& GetRecommendedJobsUseCase & Lấy danh sách việc làm phù hợp \\
+\hline
+\multirow{4}{*}{Job} & CreateJobUseCase & Đăng tin tuyển dụng mới \\
+\cline{2-3}
+& SearchJobsUseCase & Tìm kiếm việc làm theo tiêu chí \\
+\cline{2-3}
+& GetSimilarJobsUseCase & Lấy các việc làm tương tự \\
+\cline{2-3}
+& ApproveJobUseCase & Duyệt tin tuyển dụng \\
+\hline
+\multirow{3}{*}{Application} & ApplyJobUseCase & Xử lý ứng tuyển việc làm \\
+\cline{2-3}
+& UpdateApplicationStatusUseCase & Cập nhật trạng thái đơn ứng tuyển \\
+\cline{2-3}
+& WithdrawApplicationUseCase & Xử lý rút đơn ứng tuyển \\
+\hline
+\multirow{3}{*}{Company} & RegisterCompanyUseCase & Đăng ký thông tin công ty \\
+\cline{2-3}
+& InviteMemberUseCase & Mời thành viên vào công ty \\
+\cline{2-3}
+& ApproveCompanyUseCase & Duyệt đăng ký công ty \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Data Transfer Objects}
+
+Data Transfer Objects (DTOs) được sử dụng để truyền dữ liệu giữa các tầng, đóng vai trò là lớp trung gian tách biệt cấu trúc dữ liệu nội bộ với dữ liệu giao tiếp bên ngoài. Thiết kế này tuân thủ nguyên tắc đóng gói và bảo vệ các thực thể nghiệp vụ khỏi sự phụ thuộc vào tầng Presentation.
+
+\begin{table}[H]
+\centering
+\caption{Các Data Transfer Object trong hệ thống}
+\label{tab:dtos}
+\begin{tabular}{|p{4cm}|p{8cm}|}
+\hline
+\textbf{DTO} & \textbf{Mô tả} \\
+\hline
+UserDTO & Chứa thông tin người dùng (không bao gồm mật khẩu) \\
+\hline
+CVDetailDTO & Chứa thông tin chi tiết hồ sơ và các thành phần con \\
+\hline
+JobDetailDTO & Chứa thông tin chi tiết tin tuyển dụng \\
+\hline
+CompanyDetailDTO & Chứa thông tin chi tiết công ty \\
+\hline
+ApplicationDTO & Chứa thông tin đơn ứng tuyển \\
+\hline
+PaginatedResponseDTO & Đóng gói kết quả phân trang cho danh sách \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/42/ApplicationLayer.png}
+	\caption{Sơ đồ lớp tầng Application}
+    \label{fig:application-layer}
+\end{figure}
+
+\subsection{Tầng Infrastructure}
+\label{subsec:infrastructure-layer-design}
+
+Tầng Infrastructure cung cấp các cài đặt cụ thể cho các giao diện trừu tượng được định nghĩa ở tầng Domain. Tầng này đóng gói các chi tiết kỹ thuật như kết nối cơ sở dữ liệu, tích hợp API bên ngoài và các dịch vụ hạ tầng, cho phép thay đổi công nghệ mà không ảnh hưởng đến logic nghiệp vụ.
+
+\subsubsection{Triển khai Repository}
+
+Các Repository được triển khai sử dụng Prisma ORM để tương tác với PostgreSQL. Prisma cung cấp type-safe database client, giúp phát hiện lỗi tại thời điểm biên dịch và cải thiện trải nghiệm phát triển.
+
+\begin{table}[H]
+\centering
+\caption{Triển khai các Repository}
+\label{tab:repository-impl}
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\textbf{Giao diện} & \textbf{Lớp triển khai} & \textbf{Công nghệ} \\
+\hline
+IUserRepository & PrismaUserRepository & Prisma + PostgreSQL \\
+\hline
+ICVRepository & PrismaCVRepository & Prisma + PostgreSQL \\
+\hline
+IJobRepository & PrismaJobRepository & Prisma + PostgreSQL \\
+\hline
+ICompanyRepository & PrismaCompanyRepository & Prisma + PostgreSQL \\
+\hline
+IApplicationRepository & PrismaApplicationRepository & Prisma + PostgreSQL \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Triển khai Service}
+
+Các dịch vụ hạ tầng được triển khai với các thư viện và dịch vụ bên ngoài phù hợp với yêu cầu chức năng và phi chức năng của hệ thống.
+
+\begin{table}[H]
+\centering
+\caption{Triển khai các Service}
+\label{tab:service-impl}
+\begin{tabular}{|p{3.5cm}|p{4.5cm}|p{4cm}|}
+\hline
+\textbf{Giao diện} & \textbf{Lớp triển khai} & \textbf{Công nghệ} \\
+\hline
+IPasswordService & BcryptPasswordService & bcrypt \\
+\hline
+ITokenService & JwtTokenService & jsonwebtoken \\
+\hline
+IStorageService & StorageService & Firebase Storage \\
+\hline
+IFileStorageService & FirebaseStorageService & Firebase Storage \\
+\hline
+INotificationService & NotificationService & Firebase Realtime \\
+\hline
+IPDFService & PDFService & Puppeteer \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/42/InfrastructureLayer.png}
+	\caption{Sơ đồ lớp tầng Infrastructure}
+    \label{fig:infrastructure-layer}
+\end{figure}
+
+\subsection{Tầng Presentation}
+\label{subsec:presentation-layer-design}
+
+Tầng Presentation xử lý tương tác với client thông qua RESTful API. Tầng này bao gồm các Controller tiếp nhận request, các Middleware xử lý các concern xuyên suốt (cross-cutting concerns), và các lớp chuyển đổi dữ liệu request/response.
+
+\subsubsection{Controllers}
+
+Các Controller được tổ chức theo tài nguyên (resource-based), mỗi Controller chịu trách nhiệm xử lý các HTTP request liên quan đến một tài nguyên cụ thể. Controller đóng vai trò là điểm vào của request, thực hiện validation đầu vào, gọi Use Case tương ứng và định dạng response trả về.
+
+\begin{table}[H]
+\centering
+\caption{Các Controller trong hệ thống}
+\label{tab:controllers}
+\begin{tabular}{|p{3.5cm}|p{8.5cm}|}
+\hline
+\textbf{Controller} & \textbf{Endpoints} \\
+\hline
+UserController & POST /users/register, POST /users/login, GET /users/me, PUT /users/me, PUT /users/password \\
+\hline
+CVController & GET /cvs, POST /cvs, PUT /cvs/:id, DELETE /cvs/:id, GET /cvs/:id/export, GET /cvs/recommendations \\
+\hline
+JobController & GET /jobs, POST /jobs, PUT /jobs/:id, GET /jobs/:id/similar, GET /jobs/recommendations \\
+\hline
+ApplicationController & POST /applications, GET /applications, PUT /applications/:id/status \\
+\hline
+CompanyController & GET /companies, POST /companies, PUT /companies/:id, POST /companies/invitations \\
+\hline
+NotificationController & GET /notifications, PUT /notifications/:id/read, DELETE /notifications/:id \\
+\hline
+CVTemplateController & GET /cv-templates, POST /cv-templates, PUT /cv-templates/:id \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Middlewares}
+
+Middleware pattern được áp dụng để xử lý các concern xuyên suốt như xác thực, xử lý lỗi và upload file. Mỗi Middleware thực hiện một nhiệm vụ cụ thể và có thể được kết hợp linh hoạt theo yêu cầu của từng endpoint.
+
+\begin{table}[H]
+\centering
+\caption{Các Middleware trong hệ thống}
+\label{tab:middlewares}
+\begin{tabular}{|p{4cm}|p{8cm}|}
+\hline
+\textbf{Middleware} & \textbf{Chức năng} \\
+\hline
+authMiddleware & Xác thực JWT token và đính kèm thông tin người dùng vào request \\
+\hline
+errorHandler & Xử lý exception và trả về response lỗi chuẩn \\
+\hline
+notFoundHandler & Xử lý các request đến endpoint không tồn tại \\
+\hline
+uploadMiddleware & Xử lý upload file sử dụng multer \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/42/PresentationLayer.png}
+	\caption{Sơ đồ lớp tầng Presentation}
+    \label{fig:presentation-layer}
+\end{figure}
+
+\subsection{Tổng quan kiến trúc}
+\label{subsec:architecture-overview}
+
+Hình \ref{fig:layered-architecture} thể hiện tổng quan mối quan hệ và luồng phụ thuộc giữa các tầng trong hệ thống. Thiết kế này đảm bảo ba nguyên tắc kiến trúc quan trọng:
+
+\begin{itemize}
+    \item \textbf{Dependency Rule}: Các tầng bên ngoài phụ thuộc vào tầng bên trong, không tồn tại phụ thuộc ngược chiều. Điều này đảm bảo logic nghiệp vụ cốt lõi không bị ảnh hưởng bởi thay đổi ở tầng hạ tầng hay giao diện.
+
+    \item \textbf{Dependency Inversion}: Tầng Domain định nghĩa các giao diện trừu tượng, tầng Infrastructure cung cấp cài đặt cụ thể. Nguyên tắc này cho phép thay đổi công nghệ hạ tầng mà không cần sửa đổi mã nguồn nghiệp vụ.
+
+    \item \textbf{Separation of Concerns}: Mỗi tầng có trách nhiệm riêng biệt và được định nghĩa rõ ràng, tạo điều kiện thuận lợi cho việc phát triển song song và bảo trì độc lập.
+\end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/42/LayeredArchitecture.png}
+	\caption{Sơ đồ tổng quan kiến trúc phân tầng}
+    \label{fig:layered-architecture}
+\end{figure}
+

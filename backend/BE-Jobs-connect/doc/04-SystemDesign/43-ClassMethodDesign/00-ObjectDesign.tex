@@ -1,0 +1,96 @@
+% Subsection 4.2.1 - Thiết kế Đối tượng
+\subsection{Thiết kế Đối tượng}
+\label{subsec:object-design}
+
+Phần này trình bày thiết kế chi tiết của năm lớp nghiệp vụ chính trong hệ thống. Chi tiết các lớp phụ trợ được trình bày trong Phụ lục~\ref{appendix:object-design-details}.
+
+\subsubsection{Lớp User}
+
+\paragraph{Tính hiển thị}
+Tất cả thuộc tính của lớp User (\texttt{id}, \texttt{email}, \texttt{passwordHash}, \texttt{fullName}, \texttt{role}, \texttt{status}, \texttt{avatarUrl}, \texttt{phoneNumber}, \texttt{dateOfBirth}, \texttt{gender}, \texttt{address}) đều được đặt \textbf{private}. Các phương thức nghiệp vụ (\texttt{registerUser}, \texttt{login}, \texttt{updateProfile}, \texttt{changePassword}, \texttt{lockAccount}, \texttt{unlockAccount}) đều \textbf{public}. Riêng phương thức \texttt{hashPassword} được đặt \textbf{private} vì chỉ được sử dụng nội bộ.
+
+\paragraph{Ràng buộc}
+\begin{itemize}
+    \item Email phải duy nhất trong toàn hệ thống: \texttt{User.allInstances()->isUnique(email)}
+    \item Mật khẩu đã mã hóa là bắt buộc: \texttt{passwordHash.multiplicity = 1..1}
+    \item Trạng thái phải thuộc tập hợp hợp lệ: \texttt{status in \{ACTIVE, INACTIVE, LOCKED\}}
+    \item Vai trò phải thuộc tập hợp hợp lệ: \texttt{role in \{CANDIDATE, RECRUITER, ADMIN\}}
+\end{itemize}
+
+\subsubsection{Lớp CV}
+
+\paragraph{Tính hiển thị}
+Tất cả thuộc tính của lớp CV (\texttt{id}, \texttt{userId}, \texttt{title}, \texttt{fullName}, \texttt{email}, \texttt{phoneNumber}, \texttt{isMain}, \texttt{isOpenForJob}, \texttt{embedding}, \texttt{pdfUrl}) và các quan hệ với lớp lồng (\texttt{educations}, \texttt{workExperiences}, \texttt{skills}, \texttt{projects}, \texttt{certifications}, \texttt{languages}) đều được đặt \textbf{private}. Tất cả phương thức nghiệp vụ (\texttt{createCV}, \texttt{updateCV}, \texttt{deleteCV}, \texttt{exportCV}, \texttt{setAsMain}, \texttt{getRecommendedCVs}) đều \textbf{public}.
+
+\paragraph{Ràng buộc}
+\begin{itemize}
+    \item Mỗi User chỉ có tối đa một CV chính: \texttt{User.cvs->select(isMain = true)->size() <= 1}
+    \item Mỗi User có tối đa 5 CV: \texttt{User.cvs->size() <= 5}
+    \item Yêu cầu embedding khi mở tìm kiếm việc làm: \texttt{isOpenForJob = true implies embedding->notEmpty()}
+    \item Email trong CV phải có định dạng hợp lệ nếu được cung cấp: \texttt{email->notEmpty() implies email.matches(emailRegex)}
+\end{itemize}
+
+\subsubsection{Lớp Job}
+
+\paragraph{Tính hiển thị}
+Tất cả thuộc tính của lớp Job (\texttt{id}, \texttt{companyId}, \texttt{title}, \texttt{description}, \texttt{status}, \texttt{jobType}, \texttt{experienceLevel}, \texttt{location}, \texttt{expiresAt}, \texttt{applicationCount}, \texttt{embedding}) và các quan hệ với lớp lồng (\texttt{salary}, \texttt{benefits}, \texttt{requirements}) đều được đặt \textbf{private}. Tất cả phương thức nghiệp vụ (\texttt{postJob}, \texttt{updateJob}, \texttt{deleteJob}, \texttt{searchJobs}, \texttt{approveJob}, \texttt{rejectJob}, \texttt{getRecommendedJobs}, \texttt{getSimilarJobs}) đều \textbf{public}.
+
+\paragraph{Ràng buộc}
+\begin{itemize}
+    \item Ngày hết hạn phải sau ngày tạo: \texttt{expiresAt > createdAt}
+    \item Tin tuyển dụng đang hoạt động phải chưa hết hạn: \texttt{status = ACTIVE implies expiresAt > DateTime::now()}
+    \item Số lượng đơn ứng tuyển không âm: \texttt{applicationCount >= 0}
+    \item Trạng thái phải thuộc tập hợp hợp lệ: \texttt{status in \{DRAFT, PENDING, ACTIVE, CLOSED, REJECTED\}}
+\end{itemize}
+
+\subsubsection{Lớp Company}
+
+\paragraph{Tính hiển thị}
+Tất cả thuộc tính của lớp Company (\texttt{id}, \texttt{name}, \texttt{email}, \texttt{description}, \texttt{industry}, \texttt{companySize}, \texttt{foundedYear}, \texttt{status}, \texttt{documentUrl}, \texttt{logoUrl}, \texttt{bannerUrl}) và các quan hệ (\texttt{members}, \texttt{invitations}, \texttt{jobs}) đều được đặt \textbf{private}. Tất cả phương thức nghiệp vụ (\texttt{registerCompany}, \texttt{updateCompany}, \texttt{approveCompany}, \texttt{rejectCompany}, \texttt{inviteMember}, \texttt{updateMemberRole}, \texttt{removeMember}) đều \textbf{public}.
+
+\paragraph{Ràng buộc}
+\begin{itemize}
+    \item Công ty đang hoạt động phải có tài liệu xác minh: \texttt{status = ACTIVE implies documentUrl->notEmpty()}
+    \item Năm thành lập phải hợp lệ: \texttt{foundedYear <= DateTime::now().year}
+    \item Email công ty phải có định dạng hợp lệ nếu được cung cấp: \texttt{email->notEmpty() implies email.matches(emailRegex)}
+    \item Trạng thái phải thuộc tập hợp hợp lệ: \texttt{status in \{PENDING, ACTIVE, REJECTED\}}
+\end{itemize}
+
+\subsubsection{Lớp Application}
+
+\paragraph{Tính hiển thị}
+Tất cả thuộc tính của lớp Application (\texttt{id}, \texttt{candidateId}, \texttt{cvId}, \texttt{jobId}, \texttt{status}, \texttt{coverLetter}, \texttt{notes}) và các quan hệ (\texttt{candidate}, \texttt{cv}, \texttt{job}) đều được đặt \textbf{private}. Tất cả phương thức nghiệp vụ (\texttt{applyJob}, \texttt{updateStatus}, \texttt{withdrawApplication}, \texttt{getApplicationsByJob}, \texttt{getMyApplications}) đều \textbf{public}.
+
+\paragraph{Ràng buộc}
+\begin{itemize}
+    \item Mỗi cặp User-Job chỉ có một đơn ứng tuyển đang hoạt động: \texttt{Application.allInstances()->select(candidateId = self.candidateId and jobId = self.jobId and status <> CANCELLED)->size() = 1}
+    \item CV và Job phải tồn tại: \texttt{cv->notEmpty() and job->notEmpty()}
+    \item Trạng thái phải thuộc tập hợp hợp lệ: \texttt{status in \{PENDING, REVIEWING, ACCEPTED, REJECTED, CANCELLED\}}
+    \item Chuyển trạng thái phải tuân theo máy trạng thái: PENDING có thể chuyển sang REVIEWING hoặc REJECTED; REVIEWING có thể chuyển sang ACCEPTED hoặc REJECTED; ứng viên có thể CANCELLED khi đang PENDING hoặc REVIEWING.
+\end{itemize}
+
+\subsubsection{Các lớp phụ trợ}
+
+Ngoài năm lớp chính, hệ thống còn bao gồm các lớp phụ trợ được tổng hợp trong Bảng~\ref{tab:supporting-classes}. Chi tiết đầy đủ về tính hiển thị và ràng buộc của các lớp này được trình bày trong Phụ lục~\ref{appendix:object-design-details}.
+
+\begin{table}[H]
+\centering
+\caption{Tổng quan các lớp phụ trợ}
+\label{tab:supporting-classes}
+\small
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Nhóm} & \textbf{Các lớp} \\
+\hline
+Lớp quan hệ & CompanyMember, CompanyMemberInvitation, SavedJob, SavedCV \\
+\hline
+Lớp hỗ trợ & Notification, CVTemplate \\
+\hline
+Lớp gợi ý & RecommendJobforCV, SimilarJob \\
+\hline
+Lớp lồng của CV & Education, WorkExperience, CVSkill, Project, Certification, Language \\
+\hline
+Lớp lồng của Job & Salary, JobBenefit, JobRequirement \\
+\hline
+\end{tabularx}
+\end{table}

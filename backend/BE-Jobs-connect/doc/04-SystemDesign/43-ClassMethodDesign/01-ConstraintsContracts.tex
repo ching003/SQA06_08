@@ -1,0 +1,53 @@
+% Subsection 4.2.2 - Xác định Ràng buộc và Hợp đồng
+\subsection{Xác định Ràng buộc và Hợp đồng}
+\label{subsec:constraints-contracts}
+
+Hợp đồng (Contract) định nghĩa tiền điều kiện và hậu điều kiện mà các đối tượng phải tuân thủ khi tương tác. Phần này trình bày các hợp đồng có quy tắc nghiệp vụ quan trọng nhất. Chi tiết đầy đủ được trình bày trong Phụ lục~\ref{appendix:constraints-contracts}.
+
+\subsubsection{Hợp đồng createCV}
+
+\paragraph{Tiền điều kiện}
+Người gọi phải có vai trò CANDIDATE trong hệ thống. Số lượng CV hiện tại của người gọi chưa vượt quá giới hạn cho phép (tối đa 5 CV). Dữ liệu CV phải hợp lệ với trường \texttt{fullName} là bắt buộc.
+
+\paragraph{Hậu điều kiện}
+CV mới được tạo và liên kết với người gọi thông qua \texttt{userId}. Nếu đây là CV đầu tiên của người gọi hoặc được chỉ định làm CV chính, thuộc tính \texttt{isMain} được gán giá trị \texttt{true}. Các thành phần con (Education, WorkExperience, Skill, Project, Certification, Language) được tạo và liên kết với CV.
+
+\subsubsection{Hợp đồng applyJob}
+
+\paragraph{Tiền điều kiện}
+Job phải đang ở trạng thái ACTIVE và chưa hết hạn (\texttt{expiresAt > now()}). CV được sử dụng phải thuộc về người gọi. Người gọi chưa có đơn ứng tuyển đang hoạt động (PENDING, REVIEWING hoặc ACCEPTED) cho Job này.
+
+\paragraph{Hậu điều kiện}
+Application mới được tạo với \texttt{status = PENDING}, liên kết với người gọi, CV và Job. Thuộc tính \texttt{applicationCount} của Job được tăng thêm 1. Thông báo loại \texttt{APPLICATION\_RECEIVED} được gửi đến Recruiter của Company sở hữu Job.
+
+\subsubsection{Hợp đồng updateApplicationStatus}
+
+\paragraph{Tiền điều kiện}
+Người gọi phải là thành viên của Company sở hữu Job liên quan đến Application. Việc chuyển trạng thái phải hợp lệ theo máy trạng thái: từ PENDING có thể chuyển sang REVIEWING hoặc REJECTED; từ REVIEWING có thể chuyển sang ACCEPTED hoặc REJECTED.
+
+\paragraph{Hậu điều kiện}
+Thuộc tính \texttt{status} của Application được cập nhật thành giá trị mới. Thuộc tính \texttt{updatedAt} được cập nhật thành thời điểm hiện tại. Thông báo loại \texttt{APPLICATION\_STATUS\_CHANGED} được gửi đến ứng viên.
+
+\subsubsection{Hợp đồng postJob}
+
+\paragraph{Tiền điều kiện}
+Người gọi phải là thành viên của một Company với vai trò OWNER, MANAGER hoặc RECRUITER. Company đó phải có \texttt{status = ACTIVE}. Nếu Job được đăng với trạng thái ACTIVE, thuộc tính \texttt{expiresAt} phải có giá trị sau thời điểm hiện tại.
+
+\paragraph{Hậu điều kiện}
+Job mới được tạo với \texttt{status} mặc định là DRAFT và \texttt{applicationCount = 0}, liên kết với Company của người gọi. Nếu Job được đăng trực tiếp với trạng thái ACTIVE, thông báo loại \texttt{JOB\_POSTED} được gửi đến những người theo dõi Company.
+
+\subsubsection{Hợp đồng registerCompany}
+
+\paragraph{Tiền điều kiện}
+Người gọi chưa là thành viên của bất kỳ công ty nào trong hệ thống. Tệp \texttt{documentFile} (giấy phép kinh doanh hoặc tài liệu xác minh) phải được cung cấp và không rỗng.
+
+\paragraph{Hậu điều kiện}
+Company mới được tạo với \texttt{status = PENDING}, chờ Admin duyệt. Thuộc tính \texttt{documentUrl} được gán từ tệp đã upload. Người gọi tự động trở thành thành viên của Company với vai trò OWNER thông qua bản ghi CompanyMember. Thông báo loại \texttt{COMPANY\_REGISTRATION} được gửi đến tất cả Admin.
+
+\subsubsection{Hợp đồng inviteMember}
+
+\paragraph{Tiền điều kiện}
+Người gọi phải là thành viên của Company với vai trò OWNER hoặc MANAGER. Người được mời (xác định qua email) phải tồn tại trong hệ thống và chưa là thành viên của Company này.
+
+\paragraph{Hậu điều kiện}
+CompanyMemberInvitation mới được tạo với \texttt{status = PENDING} và \texttt{expiresAt} được gán giá trị sau 7 ngày kể từ thời điểm hiện tại. Thông báo loại \texttt{COMPANY\_INVITATION} được gửi đến người được mời.

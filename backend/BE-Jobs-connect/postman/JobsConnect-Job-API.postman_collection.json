@@ -1,0 +1,669 @@
+{
+  "info": {
+    "_postman_id": "jobsconnect-job-api-001",
+    "name": "JobsConnect - Job API",
+    "description": "Collection cho các API Job của JobsConnect Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public Job Operations",
+      "item": [
+        {
+          "name": "Get All Jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.jobs && response.data.jobs.length > 0) {",
+                  "        pm.environment.set(\"job_id\", response.data.jobs[0].id);",
+                  "        console.log(\"✅ Jobs retrieved successfully\");",
+                  "        console.log(\"Total jobs: \" + response.data.pagination.total);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jobs?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Items per page (default: 10, max: 100)"
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "description": "Filter by status: DRAFT, ACTIVE, INACTIVE, LOCKED, PENDING, SUSPENDED (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "location",
+                  "value": "Ho Chi Minh City",
+                  "description": "Filter by location (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "industry",
+                  "value": "Technology",
+                  "description": "Filter by industry (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "experienceLevel",
+                  "value": "SENIOR",
+                  "description": "Filter by experience: INTERN, FRESHER, JUNIOR, MIDDLE, SENIOR, LEAD, MANAGER (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "FULL_TIME",
+                  "description": "Filter by type: FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP, FREELANCE (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "urgent",
+                  "value": "false",
+                  "description": "Filter urgent jobs: true/false (optional)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lấy danh sách jobs với pagination và filters (Public - không cần authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/search?query=software engineer&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "software engineer",
+                  "description": "Search query (searches in title and description)"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "location",
+                  "value": "Ho Chi Minh City",
+                  "description": "Filter by location (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "industry",
+                  "value": "Technology",
+                  "description": "Filter by industry (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "experienceLevel",
+                  "value": "SENIOR",
+                  "description": "Filter by experience level (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "FULL_TIME",
+                  "description": "Filter by job type (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "description": "Filter by status (optional, default: ACTIVE)",
+                  "disabled": true
+                },
+                {
+                  "key": "urgent",
+                  "value": "false",
+                  "description": "Filter urgent jobs: true/false (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "companyId",
+                  "value": "",
+                  "description": "Filter by company ID (UUID, optional)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Tìm kiếm jobs với text search và filters (Public)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"job_id\", response.data.id);",
+                  "        pm.environment.set(\"company_id\", response.data.companyId);",
+                  "        console.log(\"✅ Job retrieved successfully\");",
+                  "        console.log(\"Job ID: \" + response.data.id);",
+                  "        console.log(\"Job Title: \" + response.data.title);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}"]
+            },
+            "description": "Lấy thông tin chi tiết job theo ID (Public)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Jobs By Company",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/company/{{company_id}}?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "company", "{{company_id}}"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "description": "Filter by status (optional)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lấy danh sách jobs của một company (Public)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Similar Jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.jobs && response.data.jobs.length > 0) {",
+                  "        console.log(\"✅ Similar jobs retrieved successfully\");",
+                  "        console.log(\"Total similar jobs: \" + response.data.jobs.length);",
+                  "        console.log(\"First job similarity: \" + response.data.jobs[0].similarity);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/similar?limit=10&minSimilarity=0",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "similar"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of similar jobs (default: 10, max: 100)"
+                },
+                {
+                  "key": "minSimilarity",
+                  "value": "0",
+                  "description": "Minimum similarity threshold (0.0 to 1.0, default: 0)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lấy danh sách similar jobs cho một job (Public).\n\n**Lưu ý:**\n- Similar jobs được tính toán dựa trên similarity scores trong database (SimilarJob table)\n- Mỗi job trong response có thêm field `similarity` (0.0 đến 1.0)\n- Jobs được sắp xếp theo similarity giảm dần\n- Nếu không có similar jobs trong database, trả về mảng rỗng"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Job CRUD (RECRUITER)",
+      "item": [
+        {
+          "name": "Create Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"job_id\", response.data.id);",
+                  "        pm.environment.set(\"company_id\", response.data.companyId);",
+                  "        console.log(\"✅ Job created successfully\");",
+                  "        console.log(\"Job ID: \" + response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Senior Software Engineer\",\n    \"description\": \"We are looking for an experienced Senior Software Engineer to join our team. You will be responsible for designing and developing scalable web applications.\",\n    \"location\": \"Ho Chi Minh City, Vietnam\",\n    \"industry\": \"Technology\",\n    \"experienceLevel\": \"SENIOR\",\n    \"type\": \"FULL_TIME\",\n    \"urgent\": false,\n    \"status\": \"DRAFT\",\n    \"expiresAt\": \"2024-12-31T23:59:59.000Z\",\n    \"salary\": {\n        \"minAmount\": 25000000,\n        \"maxAmount\": 40000000,\n        \"currency\": \"VND\",\n        \"isNegotiable\": true,\n        \"hideAmount\": false\n    },\n    \"benefits\": [\n        {\n            \"title\": \"Competitive Salary\",\n            \"description\": \"Attractive salary package with performance bonuses\"\n        },\n        {\n            \"title\": \"Health Insurance\",\n            \"description\": \"Comprehensive health insurance\"\n        },\n        {\n            \"title\": \"Flexible Working Hours\",\n            \"description\": \"Work-life balance with flexible schedule\"\n        }\n    ],\n    \"requirements\": [\n        {\n            \"title\": \"Education\",\n            \"description\": \"Bachelor degree in Computer Science or related field\"\n        },\n        {\n            \"title\": \"Experience\",\n            \"description\": \"5+ years of experience in software development\"\n        },\n        {\n            \"title\": \"Technical Skills\",\n            \"description\": \"Strong proficiency in JavaScript, Node.js, React, PostgreSQL\"\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/jobs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs"]
+            },
+            "description": "Tạo job mới. Yêu cầu RECRUITER role và phải là member của company.\n\n**Lưu ý:**\n- companyId sẽ tự động lấy từ token (userId -> CompanyMember -> companyId)\n- Không cần gửi companyId trong request body\n- title: Tiêu đề job (required, min 3 chars)\n- description: Mô tả job (required, min 10 chars)\n- status: Mặc định là ACTIVE, có thể đặt DRAFT để lưu nháp. Các status hợp lệ: DRAFT, ACTIVE, INACTIVE, LOCKED, PENDING, SUSPENDED\n- salary, benefits, requirements: Optional"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Senior Software Engineer - Updated\",\n    \"description\": \"Updated job description with more details about the role and responsibilities.\",\n    \"location\": \"Ho Chi Minh City, Vietnam\",\n    \"urgent\": true,\n    \"expiresAt\": \"2025-01-31T23:59:59.000Z\",\n    \"salary\": {\n        \"minAmount\": 30000000,\n        \"maxAmount\": 45000000,\n        \"currency\": \"VND\",\n        \"isNegotiable\": true\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}"]
+            },
+            "description": "Cập nhật job. Yêu cầu RECRUITER role và phải là member của company sở hữu job.\n\n**Lưu ý:**\n- Tất cả fields đều optional\n- Chỉ có thể update jobs của company mình"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}"]
+            },
+            "description": "Xóa job. Yêu cầu OWNER hoặc MANAGER role của company sở hữu job."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Job Management (RECRUITER)",
+      "item": [
+        {
+          "name": "Close Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/close",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "close"]
+            },
+            "description": "Đóng job (set status = INACTIVE). Yêu cầu RECRUITER role và phải là member của company."
+          },
+          "response": []
+        },
+        {
+          "name": "Repost Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"publishNow\": false,\n    \"expiresAt\": \"2025-02-28T23:59:59.000Z\",\n    \"title\": \"Updated Title (optional)\",\n    \"description\": \"Updated description (optional)\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/repost",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "repost"]
+            },
+            "description": "Repost job - Tạo job mới copy từ job cũ.\n\n**Lưu ý:**\n- Tạo job MỚI (không update job cũ)\n- Copy tất cả data từ job cũ: title, description, location, industry, experienceLevel, type, urgent, salary, benefits, requirements\n- Status luôn là ACTIVE (publishNow param hiện không được sử dụng)\n- expiresAt: Mặc định 30 ngày từ bây giờ nếu không có trong body\n- applicationCount: Reset về 0\n- Có thể update job data trong body để override data từ job cũ (title, description, location, industry, experienceLevel, type, urgent, salary, benefits, requirements)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Operations",
+      "item": [
+        {
+          "name": "Approve Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "approve"]
+            },
+            "description": "Duyệt job (set status = ACTIVE). Chỉ ADMIN mới có quyền."
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Job description không đầy đủ\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/reject",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "reject"]
+            },
+            "description": "Từ chối job (set status = SUSPENDED). Chỉ ADMIN mới có quyền.\n\n**Lưu ý:**\n- reason: Lý do từ chối (optional)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Candidate Operations",
+      "item": [
+        {
+          "name": "Save Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Job saved successfully\");",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/save",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "save"]
+            },
+            "description": "Lưu job vào danh sách yêu thích. Chỉ CANDIDATE mới có quyền."
+          },
+          "response": []
+        },
+        {
+          "name": "Unsave Job",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/save",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "save"]
+            },
+            "description": "Bỏ lưu job. Chỉ CANDIDATE mới có quyền."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Saved Jobs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/saved?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "saved"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Lấy danh sách jobs đã lưu. Chỉ CANDIDATE mới có quyền."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recommended Jobs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/recommended?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "recommended"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of recommended jobs (default: 10, max: 100)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách jobs được recommend dựa trên CV của candidate. Chỉ CANDIDATE mới có quyền.\n\n**Lưu ý:**\n- Recommendation algorithm hiện tại là placeholder logic dựa trên experience level và skills từ CV\n- Nếu candidate không có CV, trả về jobs mới nhất\n- Response không có similarity score (có thể được thêm trong tương lai)"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Job Saved",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/saved",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "saved"]
+            },
+            "description": "Kiểm tra job đã được lưu hay chưa. Yêu cầu authentication."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Recruiter Operations",
+      "item": [
+        {
+          "name": "Get Recommended CVs For Job",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/recommended-cvs?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "recommended-cvs"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of recommended CVs (default: 10, max: 100)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách CV được đề xuất cho job. Chỉ RECRUITER hoặc ADMIN mới có quyền.\n\n**Lưu ý:**\n- Có thể trả về 501 Not Implemented nếu CV module chưa được migrate"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
+

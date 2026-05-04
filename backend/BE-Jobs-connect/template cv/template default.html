@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{cv.title}} - {{cv.fullName}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+      /* Reset và Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #fff;
+        font-size: 12px;
+      }
+
+      .cv-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: white;
+      }
+
+      /* Header Section */
+      .cv-header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #2c3e50;
+        padding-bottom: 20px;
+      }
+
+      .cv-name {
+        font-size: 28px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .cv-title {
+        font-size: 18px;
+        color: #7f8c8d;
+        margin-bottom: 15px;
+      }
+
+      .cv-contact {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+      }
+
+      .contact-icon {
+        width: 12px;
+        height: 12px;
+      }
+
+      /* Avatar */
+      .cv-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 15px;
+        display: block;
+        border: 3px solid #2c3e50;
+      }
+
+      /* Section Styles */
+      .cv-section {
+        margin-bottom: 25px;
+      }
+
+      .section-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #2c3e50;
+        border-bottom: 1px solid #bdc3c7;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .section-content {
+        margin-left: 0;
+      }
+
+      /* Summary/Objective */
+      .cv-summary {
+        background: #f8f9fa;
+        padding: 15px;
+        border-left: 4px solid #3498db;
+        margin-bottom: 20px;
+        font-style: italic;
+      }
+
+      /* Work Experience */
+      .work-item {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ecf0f1;
+      }
+
+      .work-item:last-child {
+        border-bottom: none;
+      }
+
+      .work-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+      }
+
+      .work-title {
+        font-weight: bold;
+        font-size: 14px;
+        color: #2c3e50;
+      }
+
+      .work-company {
+        font-weight: bold;
+        color: #3498db;
+      }
+
+      .work-dates {
+        font-size: 11px;
+        color: #7f8c8d;
+        white-space: nowrap;
+      }
+
+      .work-description {
+        font-size: 11px;
+        line-height: 1.5;
+        margin-top: 5px;
+      }
+
+      /* Education */
+      .education-item {
+        margin-bottom: 15px;
+      }
+
+      .education-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 5px;
+      }
+
+      .education-degree {
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .education-institution {
+        color: #3498db;
+      }
+
+      .education-dates {
+        font-size: 11px;
+        color: #7f8c8d;
+      }
+
+      /* Skills */
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .skill-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+      }
+
+      .skill-name {
+        font-weight: 500;
+      }
+
+      .skill-years {
+        font-size: 10px;
+        color: #7f8c8d;
+        margin-left: 5px;
+      }
+
+      .skill-level {
+        font-size: 11px;
+        color: #7f8c8d;
+      }
+
+      .skill-bar {
+        width: 100px;
+        height: 4px;
+        background: #ecf0f1;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-left: 10px;
+      }
+
+      .skill-progress {
+        height: 100%;
+        background: #3498db;
+        border-radius: 2px;
+      }
+
+      /* Projects */
+      .project-item {
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+      }
+
+      .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 5px;
+      }
+
+      .project-name {
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .project-url {
+        font-size: 11px;
+        color: #3498db;
+        text-decoration: none;
+      }
+
+      .project-dates {
+        font-size: 11px;
+        color: #7f8c8d;
+      }
+
+      /* Certifications */
+      .cert-item {
+        margin-bottom: 10px;
+        padding: 8px 0;
+      }
+
+      .cert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 3px;
+      }
+
+      .cert-name {
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .cert-issuer {
+        color: #3498db;
+      }
+
+      .cert-date {
+        font-size: 11px;
+        color: #7f8c8d;
+      }
+
+      /* Languages */
+      .language-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+      }
+
+      .language-name {
+        font-weight: 500;
+      }
+
+      .language-level {
+        font-size: 11px;
+        color: #7f8c8d;
+      }
+
+      /* Responsive */
+      @media print {
+        body {
+          font-size: 11px;
+        }
+
+        .cv-container {
+          padding: 15px;
+        }
+
+        .cv-name {
+          font-size: 24px;
+        }
+
+        .cv-title {
+          font-size: 16px;
+        }
+      }
+
+      /* Utilities */
+      .text-center {
+        text-align: center;
+      }
+      .text-right {
+        text-align: right;
+      }
+      .mb-0 {
+        margin-bottom: 0;
+      }
+      .mt-10 {
+        margin-top: 10px;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  <script bis_use="true" type="text/javascript" charset="utf-8" data-bis-config="[&quot;facebook.com/&quot;,&quot;twitter.com/&quot;,&quot;youtube-nocookie.com/embed/&quot;,&quot;//vk.com/&quot;,&quot;//www.vk.com/&quot;,&quot;linkedin.com/&quot;,&quot;//www.linkedin.com/&quot;,&quot;//instagram.com/&quot;,&quot;//www.instagram.com/&quot;,&quot;//www.google.com/recaptcha/api2/&quot;,&quot;//hangouts.google.com/webchat/&quot;,&quot;//www.google.com/calendar/&quot;,&quot;//www.google.com/maps/embed&quot;,&quot;spotify.com/&quot;,&quot;soundcloud.com/&quot;,&quot;//player.vimeo.com/&quot;,&quot;//disqus.com/&quot;,&quot;//tgwidget.com/&quot;,&quot;//js.driftt.com/&quot;,&quot;friends2follow.com&quot;,&quot;/widget&quot;,&quot;login&quot;,&quot;//video.bigmir.net/&quot;,&quot;blogger.com&quot;,&quot;//smartlock.google.com/&quot;,&quot;//keep.google.com/&quot;,&quot;/web.tolstoycomments.com/&quot;,&quot;moz-extension://&quot;,&quot;chrome-extension://&quot;,&quot;/auth/&quot;,&quot;//analytics.google.com/&quot;,&quot;adclarity.com&quot;,&quot;paddle.com/checkout&quot;,&quot;hcaptcha.com&quot;,&quot;recaptcha.net&quot;,&quot;2captcha.com&quot;,&quot;accounts.google.com&quot;,&quot;www.google.com/shopping/customerreviews&quot;,&quot;buy.tinypass.com&quot;,&quot;gstatic.com&quot;,&quot;secureir.ebaystatic.com&quot;,&quot;docs.google.com&quot;,&quot;contacts.google.com&quot;,&quot;github.com&quot;,&quot;mail.google.com&quot;,&quot;chat.google.com&quot;,&quot;audio.xpleer.com&quot;,&quot;keepa.com&quot;,&quot;static.xx.fbcdn.net&quot;,&quot;sas.selleramp.com&quot;,&quot;1plus1.video&quot;,&quot;console.googletagservices.com&quot;,&quot;//lnkd.demdex.net/&quot;,&quot;//radar.cedexis.com/&quot;,&quot;//li.protechts.net/&quot;,&quot;challenges.cloudflare.com/&quot;,&quot;ogs.google.com&quot;]" src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/executors/traffic.js"></script></head>
+  <body bis_register="W3sibWFzdGVyIjp0cnVlLCJleHRlbnNpb25JZCI6ImVwcGlvY2VtaG1ubGJoanBsY2drb2ZjaWllZ29tY29uIiwiYWRibG9ja2VyU3RhdHVzIjp7IkRJU1BMQVkiOiJkaXNhYmxlZCIsIkZBQ0VCT09LIjoiZGlzYWJsZWQiLCJUV0lUVEVSIjoiZGlzYWJsZWQiLCJSRURESVQiOiJkaXNhYmxlZCIsIlBJTlRFUkVTVCI6ImRpc2FibGVkIiwiSU5TVEFHUkFNIjoiZGlzYWJsZWQiLCJUSUtUT0siOiJkaXNhYmxlZCIsIkxJTktFRElOIjoiZGlzYWJsZWQiLCJDT05GSUciOiJkaXNhYmxlZCJ9LCJ2ZXJzaW9uIjoiMi4wLjMzIiwic2NvcmUiOjIwMDMzfV0=" __processed_32e36297-78ea-4f89-b20f-58543b07c906__="true">
+    <div class="cv-container" bis_skin_checked="1">
+      <!-- Header Section -->
+      <div class="cv-header" bis_skin_checked="1">
+        {{#if cv.avatarUrl}}
+        <img src="./template default_files/{{cv.avatarUrl}}" alt="Avatar" class="cv-avatar">
+        {{/if}}
+
+        <h1 class="cv-name">{{cv.fullName}}</h1>
+        <div class="cv-title" bis_skin_checked="1">{{cv.currentPosition}}</div>
+
+        <div class="cv-contact" bis_skin_checked="1">
+          {{#if cv.email}}
+          <div class="contact-item" bis_skin_checked="1">
+            <span>📧</span>
+            <span>{{cv.email}}</span>
+          </div>
+          {{/if}} {{#if cv.phoneNumber}}
+          <div class="contact-item" bis_skin_checked="1">
+            <span>📱</span>
+            <span>{{cv.phoneNumber}}</span>
+          </div>
+          {{/if}} {{#if cv.address}}
+          <div class="contact-item" bis_skin_checked="1">
+            <span>📍</span>
+            <span>{{cv.address}}</span>
+          </div>
+          {{/if}} {{#if cv.nationality}}
+          <div class="contact-item" bis_skin_checked="1">
+            <span>🌍</span>
+            <span>{{cv.nationality}}</span>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+
+      <!-- Summary Section -->
+      {{#if cv.summary}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Tóm tắt</h2>
+        <div class="cv-summary" bis_skin_checked="1">{{cv.summary}}</div>
+      </div>
+      {{/if}}
+
+      <!-- Objective Section -->
+      {{#if cv.objective}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Mục tiêu nghề nghiệp</h2>
+        <div class="section-content" bis_skin_checked="1">{{cv.objective}}</div>
+      </div>
+      {{/if}}
+
+      <!-- Work Experience Section -->
+      {{#if workExperience}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Kinh nghiệm làm việc</h2>
+        <div class="section-content" bis_skin_checked="1">
+          {{#each workExperience}}
+          <div class="work-item" bis_skin_checked="1">
+            <div class="work-header" bis_skin_checked="1">
+              <div bis_skin_checked="1">
+                <div class="work-title" bis_skin_checked="1">{{this.title}}</div>
+                <div class="work-company" bis_skin_checked="1">{{this.company}}</div>
+              </div>
+              <div class="work-dates" bis_skin_checked="1">
+                {{formatDate this.startDate}} - {{#if this.endDate}}{{formatDate
+                this.endDate}}{{else}}Hiện tại{{/if}}
+              </div>
+            </div>
+            {{#if this.description}}
+            <div class="work-description" bis_skin_checked="1">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Education Section -->
+      {{#if education}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Học vấn</h2>
+        <div class="section-content" bis_skin_checked="1">
+          {{#each education}}
+          <div class="education-item" bis_skin_checked="1">
+            <div class="education-header" bis_skin_checked="1">
+              <div bis_skin_checked="1">
+                <div class="education-degree" bis_skin_checked="1">{{this.degree}}</div>
+                <div class="education-institution" bis_skin_checked="1">{{this.institution}}</div>
+              </div>
+              <div class="education-dates" bis_skin_checked="1">
+                {{formatDate this.startDate}} - {{#if this.endDate}}{{formatDate
+                this.endDate}}{{else}}Hiện tại{{/if}}
+              </div>
+            </div>
+            {{#if this.description}}
+            <div class="work-description" bis_skin_checked="1">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Skills Section -->
+      {{#if skills}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Kỹ năng</h2>
+        <div class="skills-grid" bis_skin_checked="1">
+          {{#each skills}}
+          <div class="skill-item" bis_skin_checked="1">
+            <div bis_skin_checked="1">
+              <span class="skill-name">{{this.skillName}}</span>
+              {{#if this.yearsOfExperience}}
+              <span class="skill-years">({{this.yearsOfExperience}} năm)</span>
+              {{/if}}
+            </div>
+            <div style="display: flex; align-items: center" bis_skin_checked="1">
+              <span class="skill-level">{{translateSkillLevel this.level}}</span>
+              <div class="skill-bar" bis_skin_checked="1">
+                <div class="skill-progress" style="width: {{getSkillProgress this.level}}%" bis_skin_checked="1"></div>
+              </div>
+            </div>
+          </div>
+          {{#if this.description}}
+          <div class="work-description" style="grid-column: 1 / -1; margin-top: -10px; margin-bottom: 10px" bis_skin_checked="1">
+            {{this.description}}
+          </div>
+          {{/if}} {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Projects Section -->
+      {{#if projects}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Dự án</h2>
+        <div class="section-content" bis_skin_checked="1">
+          {{#each projects}}
+          <div class="project-item" bis_skin_checked="1">
+            <div class="project-header" bis_skin_checked="1">
+              <div bis_skin_checked="1">
+                <div class="project-name" bis_skin_checked="1">{{this.name}}</div>
+                {{#if this.role}}
+                <div class="project-role" bis_skin_checked="1">{{this.role}}</div>
+                {{/if}}
+              </div>
+              <div class="project-dates" bis_skin_checked="1">
+                {{formatDate this.startDate}} - {{#if this.endDate}}{{formatDate
+                this.endDate}}{{else}}Hiện tại{{/if}}
+              </div>
+            </div>
+            {{#if this.url}}
+            <div class="project-url" bis_skin_checked="1">{{this.url}}</div>
+            {{/if}} {{#if this.description}}
+            <div class="work-description" bis_skin_checked="1">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Certifications Section -->
+      {{#if certifications}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Chứng chỉ</h2>
+        <div class="section-content" bis_skin_checked="1">
+          {{#each certifications}}
+          <div class="cert-item" bis_skin_checked="1">
+            <div class="cert-header" bis_skin_checked="1">
+              <div bis_skin_checked="1">
+                <div class="cert-name" bis_skin_checked="1">{{this.name}}</div>
+                <div class="cert-issuer" bis_skin_checked="1">{{this.issuer}}</div>
+              </div>
+              <div class="cert-date" bis_skin_checked="1">{{formatDate this.acquiredAt}}</div>
+            </div>
+            {{#if this.description}}
+            <div class="work-description" bis_skin_checked="1">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Languages Section -->
+      {{#if languages}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Ngôn ngữ</h2>
+        <div class="section-content" bis_skin_checked="1">
+          {{#each languages}}
+          <div class="language-item" bis_skin_checked="1">
+            <div bis_skin_checked="1">
+              <span class="language-name">{{this.name}}</span>
+              <span class="language-level">{{translateLanguageLevel this.proficiency}}</span>
+            </div>
+            {{#if this.description}}
+            <div class="language-description" bis_skin_checked="1">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Achievements Section -->
+      {{#if achievements}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Thành tích</h2>
+        <div class="section-content" bis_skin_checked="1">
+          {{#each achievements}}
+          <div class="cert-item" bis_skin_checked="1">
+            <div class="cert-header" bis_skin_checked="1">
+              <div bis_skin_checked="1">
+                <div class="cert-name" bis_skin_checked="1">{{this.title}}</div>
+              </div>
+              <div class="cert-date" bis_skin_checked="1">{{formatDate this.date}}</div>
+            </div>
+            {{#if this.description}}
+            <div class="work-description" bis_skin_checked="1">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Activities Section -->
+      {{#if activities}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Hoạt động</h2>
+        <div class="section-content" bis_skin_checked="1">
+          {{#each activities}}
+          <div class="work-item" bis_skin_checked="1">
+            <div class="work-header" bis_skin_checked="1">
+              <div bis_skin_checked="1">
+                <div class="work-title" bis_skin_checked="1">{{this.title}}</div>
+                <div class="work-company" bis_skin_checked="1">{{this.organization}}</div>
+              </div>
+              <div class="work-dates" bis_skin_checked="1">
+                {{formatDate this.startDate}} - {{#if this.endDate}}{{formatDate
+                this.endDate}}{{else}}Hiện tại{{/if}}
+              </div>
+            </div>
+            {{#if this.description}}
+            <div class="work-description" bis_skin_checked="1">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- References Section -->
+      {{#if references}}
+      <div class="cv-section" bis_skin_checked="1">
+        <h2 class="section-title">Người giới thiệu</h2>
+        <div class="section-content" bis_skin_checked="1">
+          {{#each references}}
+          <div class="work-item" bis_skin_checked="1">
+            <div class="work-header" bis_skin_checked="1">
+              <div bis_skin_checked="1">
+                <div class="work-title" bis_skin_checked="1">{{this.name}}</div>
+                <div class="work-company" bis_skin_checked="1">{{this.position}} at {{this.company}}</div>
+              </div>
+            </div>
+            <div class="work-description" bis_skin_checked="1">
+              {{#if this.email}}📧 {{this.email}}{{/if}} {{#if this.phone}} | 📱
+              {{this.phone}}{{/if}} {{#if this.relationship}} | {{this.relationship}}{{/if}}
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  
+
+</body></html>

@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{cv.title}} - {{cv.fullName}}</title>
+    <style>
+      /* Harvard CV Template - Clean and Professional */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Times New Roman', 'Georgia', serif;
+        line-height: 1.4;
+        color: #000;
+        background: #fff;
+        font-size: 11px;
+      }
+
+      .cv-container {
+        max-width: 8.5in;
+        margin: 0 auto;
+        padding: 0.75in;
+        background: white;
+      }
+
+      /* Header Section */
+      .cv-header {
+        text-align: center;
+        margin-bottom: 0.5in;
+        border-bottom: 1px solid #000;
+        padding-bottom: 0.2in;
+      }
+
+      .cv-name {
+        font-size: 18px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.1in;
+      }
+
+      .cv-title {
+        font-size: 12px;
+        font-style: italic;
+        margin-bottom: 0.15in;
+      }
+
+      .cv-contact {
+        font-size: 10px;
+        line-height: 1.3;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.2in;
+      }
+
+      .contact-row {
+        display: flex;
+        gap: 0.15in;
+        margin-bottom: 0.05in;
+      }
+
+      .contact-item {
+        white-space: nowrap;
+      }
+
+      /* Avatar */
+      .cv-avatar {
+        width: 1.2in;
+        height: 1.2in;
+        border-radius: 0;
+        object-fit: cover;
+        margin: 0 auto 0.15in;
+        display: block;
+        border: 1px solid #000;
+      }
+
+      /* Section Styles */
+      .cv-section {
+        margin-bottom: 0.3in;
+      }
+
+      .section-title {
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.1in;
+        border-bottom: 1px solid #000;
+        padding-bottom: 0.02in;
+      }
+
+      .section-content {
+        margin-left: 0;
+      }
+
+      /* Summary/Objective */
+      .cv-summary {
+        font-size: 11px;
+        line-height: 1.4;
+        text-align: justify;
+        margin-bottom: 0.1in;
+      }
+
+      /* Work Experience */
+      .work-item {
+        margin-bottom: 0.15in;
+      }
+
+      .work-header {
+        margin-bottom: 0.05in;
+      }
+
+      .work-title {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .work-company {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .work-dates {
+        font-size: 10px;
+        float: right;
+        font-style: italic;
+      }
+
+      .work-description {
+        font-size: 10px;
+        line-height: 1.3;
+        margin-top: 0.05in;
+        text-align: justify;
+      }
+
+      /* Education */
+      .education-item {
+        margin-bottom: 0.1in;
+      }
+
+      .education-header {
+        margin-bottom: 0.03in;
+      }
+
+      .education-degree {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .education-institution {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .education-dates {
+        font-size: 10px;
+        float: right;
+        font-style: italic;
+      }
+
+      .education-description {
+        font-size: 10px;
+        line-height: 1.3;
+        margin-top: 0.03in;
+        text-align: justify;
+      }
+
+      /* Skills */
+      .skills-content {
+        font-size: 10px;
+        line-height: 1.3;
+      }
+
+      .skill-category {
+        margin-bottom: 0.05in;
+      }
+
+      .skill-category-title {
+        font-weight: bold;
+        font-size: 10px;
+        margin-bottom: 0.02in;
+      }
+
+      .skill-list {
+        margin-left: 0.1in;
+      }
+
+      /* Projects */
+      .project-item {
+        margin-bottom: 0.1in;
+      }
+
+      .project-header {
+        margin-bottom: 0.03in;
+      }
+
+      .project-name {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .project-dates {
+        font-size: 10px;
+        float: right;
+        font-style: italic;
+      }
+
+      .project-url {
+        font-size: 10px;
+        font-style: italic;
+        margin-bottom: 0.02in;
+      }
+
+      .project-description {
+        font-size: 10px;
+        line-height: 1.3;
+        margin-top: 0.03in;
+        text-align: justify;
+      }
+
+      /* Certifications */
+      .cert-item {
+        margin-bottom: 0.08in;
+      }
+
+      .cert-header {
+        margin-bottom: 0.02in;
+      }
+
+      .cert-name {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .cert-issuer {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .cert-date {
+        font-size: 10px;
+        float: right;
+        font-style: italic;
+      }
+
+      .cert-description {
+        font-size: 10px;
+        line-height: 1.3;
+        margin-top: 0.02in;
+        text-align: justify;
+      }
+
+      /* Languages */
+      .language-item {
+        margin-bottom: 0.05in;
+        font-size: 10px;
+      }
+
+      .language-name {
+        font-weight: bold;
+        display: inline;
+      }
+
+      .language-level {
+        font-style: italic;
+        margin-left: 0.1in;
+      }
+
+      /* Publications/Research (if needed) */
+      .publication-item {
+        margin-bottom: 0.08in;
+        font-size: 10px;
+        line-height: 1.3;
+      }
+
+      .publication-title {
+        font-weight: bold;
+        display: inline;
+      }
+
+      .publication-authors {
+        font-style: italic;
+        margin-left: 0.05in;
+      }
+
+      .publication-venue {
+        margin-left: 0.05in;
+      }
+
+      .publication-date {
+        float: right;
+        font-style: italic;
+      }
+
+      /* Achievements */
+      .achievement-item {
+        margin-bottom: 0.1in;
+      }
+
+      .achievement-header {
+        margin-bottom: 0.03in;
+      }
+
+      .achievement-title {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .achievement-date {
+        font-size: 10px;
+        float: right;
+        font-style: italic;
+      }
+
+      .achievement-issuer {
+        font-weight: bold;
+        font-size: 11px;
+        color: #333;
+        margin-bottom: 0.02in;
+      }
+
+      .achievement-description {
+        font-size: 10px;
+        line-height: 1.3;
+        margin-top: 0.02in;
+        text-align: justify;
+      }
+
+      /* Activities */
+      .activity-item {
+        margin-bottom: 0.1in;
+      }
+
+      .activity-header {
+        margin-bottom: 0.03in;
+      }
+
+      .activity-title {
+        font-weight: bold;
+        font-size: 11px;
+        display: inline;
+      }
+
+      .activity-dates {
+        font-size: 10px;
+        float: right;
+        font-style: italic;
+      }
+
+      .activity-organization {
+        font-weight: bold;
+        font-size: 11px;
+        color: #333;
+        margin-bottom: 0.02in;
+      }
+
+      .activity-description {
+        font-size: 10px;
+        line-height: 1.3;
+        margin-top: 0.02in;
+        text-align: justify;
+      }
+
+      /* References */
+      .reference-item {
+        margin-bottom: 0.1in;
+      }
+
+      .reference-name {
+        font-weight: bold;
+        font-size: 11px;
+        margin-bottom: 0.02in;
+      }
+
+      .reference-position {
+        font-weight: bold;
+        font-size: 11px;
+        color: #333;
+        margin-bottom: 0.02in;
+      }
+
+      .reference-contact {
+        font-size: 10px;
+        line-height: 1.3;
+      }
+
+      /* Clear floats */
+      .clearfix::after {
+        content: '';
+        display: table;
+        clear: both;
+      }
+
+      /* Responsive */
+      @media print {
+        body {
+          font-size: 10px;
+        }
+
+        .cv-container {
+          padding: 0.5in;
+        }
+
+        .cv-name {
+          font-size: 16px;
+        }
+
+        .cv-title {
+          font-size: 11px;
+        }
+      }
+
+      /* Utilities */
+      .text-center {
+        text-align: center;
+      }
+      .text-right {
+        text-align: right;
+      }
+      .text-justify {
+        text-align: justify;
+      }
+      .mb-0 {
+        margin-bottom: 0;
+      }
+      .mt-10 {
+        margin-top: 0.1in;
+      }
+      .hidden {
+        display: none;
+      }
+      .italic {
+        font-style: italic;
+      }
+      .bold {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cv-container">
+      <!-- Header Section -->
+      <div class="cv-header">
+        {{#if cv.avatarUrl}}
+        <img src="{{cv.avatarUrl}}" alt="Avatar" class="cv-avatar" />
+        {{/if}}
+
+        <h1 class="cv-name">{{cv.fullName}}</h1>
+        <div class="cv-title">{{cv.currentPosition}}</div>
+
+        <div class="cv-contact">
+          <div class="contact-row">
+            {{#if cv.email}}
+            <div class="contact-item">{{cv.email}}</div>
+            {{/if}} {{#if cv.phoneNumber}}
+            <div class="contact-item">{{cv.phoneNumber}}</div>
+            {{/if}}
+          </div>
+          <div class="contact-row">
+            {{#if cv.address}}
+            <div class="contact-item">{{cv.address}}</div>
+            {{/if}} {{#if cv.nationality}}
+            <div class="contact-item">{{cv.nationality}}</div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Section -->
+      {{#if cv.summary}}
+      <div class="cv-section">
+        <h2 class="section-title">Tóm tắt</h2>
+        <div class="cv-summary">{{cv.summary}}</div>
+      </div>
+      {{/if}}
+
+      <!-- Objective Section -->
+      {{#if cv.objective}}
+      <div class="cv-section">
+        <h2 class="section-title">Mục tiêu nghề nghiệp</h2>
+        <div class="cv-summary">{{cv.objective}}</div>
+      </div>
+      {{/if}}
+
+      <!-- Work Experience Section -->
+      {{#if workExperience}}
+      <div class="cv-section">
+        <h2 class="section-title">Kinh nghiệm làm việc</h2>
+        <div class="section-content">
+          {{#each workExperience}}
+          <div class="work-item clearfix">
+            <div class="work-header clearfix">
+              <div class="work-title">{{this.title}}</div>
+              <span>, </span>
+              <div class="work-company">{{this.company}}</div>
+              <div class="work-dates">
+                {{formatDateHarvard this.startDate}} - {{#if this.endDate}}{{formatDateHarvard
+                this.endDate}}{{else}}Hiện tại{{/if}}
+              </div>
+            </div>
+            {{#if this.description}}
+            <div class="work-description">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Education Section -->
+      {{#if education}}
+      <div class="cv-section">
+        <h2 class="section-title">Học vấn</h2>
+        <div class="section-content">
+          {{#each education}}
+          <div class="education-item clearfix">
+            <div class="education-header clearfix">
+              <div class="education-degree">{{this.degree}}</div>
+              <span>, </span>
+              <div class="education-institution">{{this.institution}}</div>
+              <div class="education-dates">
+                {{formatDateHarvard this.startDate}} - {{#if this.endDate}}{{formatDateHarvard
+                this.endDate}}{{else}}Hiện tại{{/if}}
+              </div>
+            </div>
+            {{#if this.description}}
+            <div class="education-description">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Skills Section -->
+      {{#if skills}}
+      <div class="cv-section">
+        <h2 class="section-title">Kỹ năng</h2>
+        <div class="skills-content">
+          {{#each skills}}
+          <div class="skill-category">
+            <div class="skill-category-title">{{this.skillName}}</div>
+            <div class="skill-list">
+              <span class="italic">{{translateSkillLevel this.level}}</span>
+              {{#if this.yearsOfExperience}}
+              <span> ({{this.yearsOfExperience}} năm kinh nghiệm)</span>
+              {{/if}} {{#if this.description}}
+              <div style="margin-top: 0.02in; font-size: 9px">{{this.description}}</div>
+              {{/if}}
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Projects Section -->
+      {{#if projects}}
+      <div class="cv-section">
+        <h2 class="section-title">Dự án</h2>
+        <div class="section-content">
+          {{#each projects}}
+          <div class="project-item clearfix">
+            <div class="project-header clearfix">
+              <div>
+                <div class="project-name">{{this.name}}</div>
+                {{#if this.role}}
+                <div class="project-role">{{this.role}}</div>
+                {{/if}}
+              </div>
+              <div class="project-dates">
+                {{formatDateHarvard this.startDate}} - {{#if this.endDate}}{{formatDateHarvard
+                this.endDate}}{{else}}Hiện tại{{/if}}
+              </div>
+            </div>
+            {{#if this.url}}
+            <div class="project-url">{{this.url}}</div>
+            {{/if}} {{#if this.description}}
+            <div class="project-description">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Certifications Section -->
+      {{#if certifications}}
+      <div class="cv-section">
+        <h2 class="section-title">Chứng chỉ</h2>
+        <div class="section-content">
+          {{#each certifications}}
+          <div class="cert-item clearfix">
+            <div class="cert-header clearfix">
+              <div class="cert-name">{{this.name}}</div>
+              <span>, </span>
+              <div class="cert-issuer">{{this.issuer}}</div>
+              <div class="cert-date">{{formatDateHarvard this.acquiredAt}}</div>
+            </div>
+            {{#if this.description}}
+            <div class="cert-description">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Languages Section -->
+      {{#if languages}}
+      <div class="cv-section">
+        <h2 class="section-title">Ngôn ngữ</h2>
+        <div class="section-content">
+          {{#each languages}}
+          <div class="language-item">
+            <div>
+              <span class="language-name">{{this.name}}</span>
+              <span class="language-level">{{translateLanguageLevel this.proficiency}}</span>
+            </div>
+            {{#if this.description}}
+            <div class="language-description">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Publications Section (if needed) -->
+      {{#if publications}}
+      <div class="cv-section">
+        <h2 class="section-title">Công trình nghiên cứu</h2>
+        <div class="section-content">
+          {{#each publications}}
+          <div class="publication-item clearfix">
+            <div class="publication-title">{{this.title}}</div>
+            <span class="publication-authors">{{this.authors}}</span>
+            <span class="publication-venue">{{this.venue}}</span>
+            <div class="publication-date">{{formatDateHarvard this.publicationDate}}</div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Achievements Section -->
+      {{#if achievements}}
+      <div class="cv-section">
+        <h2 class="section-title">Thành tích</h2>
+        <div class="section-content">
+          {{#each achievements}}
+          <div class="achievement-item clearfix">
+            <div class="achievement-header clearfix">
+              <div class="achievement-title">{{this.title}}</div>
+              <div class="achievement-date">{{formatDateHarvard this.date}}</div>
+            </div>
+            {{#if this.description}}
+            <div class="achievement-description">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- Activities Section -->
+      {{#if activities}}
+      <div class="cv-section">
+        <h2 class="section-title">Hoạt động</h2>
+        <div class="section-content">
+          {{#each activities}}
+          <div class="activity-item clearfix">
+            <div class="activity-header clearfix">
+              <div class="activity-title">{{this.title}}</div>
+              <div class="activity-dates">
+                {{formatDateHarvard this.startDate}} - {{#if this.endDate}}{{formatDateHarvard
+                this.endDate}}{{else}}Hiện tại{{/if}}
+              </div>
+            </div>
+            <div class="activity-organization">{{this.organization}}</div>
+            {{#if this.description}}
+            <div class="activity-description">{{this.description}}</div>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <!-- References Section -->
+      {{#if references}}
+      <div class="cv-section">
+        <h2 class="section-title">Người giới thiệu</h2>
+        <div class="section-content">
+          {{#each references}}
+          <div class="reference-item">
+            <div class="reference-name">{{this.name}}</div>
+            <div class="reference-position">{{this.position}}, {{this.company}}</div>
+            <div class="reference-contact">
+              {{#if this.email}}{{this.email}}{{/if}} {{#if this.phone}} | {{this.phone}}{{/if}}
+              {{#if this.relationship}} | {{this.relationship}}{{/if}}
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </body>
+</html>

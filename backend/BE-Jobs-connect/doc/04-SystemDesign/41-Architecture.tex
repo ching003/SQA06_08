@@ -1,0 +1,452 @@
+% Section 4.1 - Kiến trúc tổng thể
+\section{Kiến trúc tổng thể}
+\label{sec:architecture}
+
+\subsection{Lựa chọn kiến trúc}
+\label{subsec:architecture-choice}
+
+Trong quá trình thiết kế hệ thống phần mềm, việc lựa chọn kiến trúc phù hợp đóng vai trò quyết định đến khả năng bảo trì, mở rộng và kiểm thử của hệ thống. Sau khi phân tích các yêu cầu nghiệp vụ và kỹ thuật, mô hình Clean Architecture \cite{martin2017clean} được lựa chọn làm nền tảng kiến trúc cho hệ thống.
+
+Clean Architecture là một biến thể của kiến trúc phân tầng truyền thống, được đề xuất bởi Robert C. Martin, với nguyên tắc cốt lõi là \textit{Dependency Rule}: các tầng bên ngoài được phép phụ thuộc vào các tầng bên trong, nhưng không có chiều ngược lại. Nguyên tắc này đảm bảo rằng logic nghiệp vụ cốt lõi không bị ảnh hưởng bởi các thay đổi về giao diện người dùng, cơ sở dữ liệu hay các dịch vụ bên ngoài.
+
+Việc áp dụng Clean Architecture mang lại các lợi ích sau:
+
+\begin{itemize}
+    \item \textbf{Tách biệt mối quan tâm (Separation of Concerns)}: Logic nghiệp vụ được cô lập khỏi các chi tiết kỹ thuật, giúp code dễ hiểu và bảo trì hơn.
+    \item \textbf{Khả năng kiểm thử cao}: Các thành phần có thể được kiểm thử độc lập thông qua việc sử dụng các đối tượng giả lập (mock objects).
+    \item \textbf{Tính linh hoạt}: Cho phép thay đổi framework, cơ sở dữ liệu hoặc các dịch vụ bên ngoài mà không ảnh hưởng đến logic nghiệp vụ.
+    \item \textbf{Khả năng mở rộng}: Cấu trúc module hóa tạo điều kiện thuận lợi cho việc bổ sung tính năng mới.
+\end{itemize}
+
+% \begin{figure}[H]
+% 	\centering
+% 	\includegraphics[width=0.8\linewidth]{Figures/Chương 4 Thiết kế/41/CleanArchitecture.png}
+% 	\caption{Mô hình Clean Architecture (nguồn: Robert C. Martin)}
+%     \label{fig:clean-architecture}
+% \end{figure}
+
+\subsection{Phân tầng hệ thống}
+\label{subsec:system-layers}
+
+Dựa trên mô hình Clean Architecture, hệ thống được tổ chức thành bốn tầng với trách nhiệm riêng biệt, giao tiếp thông qua các giao diện (interfaces) được định nghĩa trước. Bảng \ref{tab:system-layers} mô tả chi tiết các tầng trong hệ thống.
+
+\begin{table}[H]
+\centering
+\caption{Phân tầng kiến trúc hệ thống}
+\label{tab:system-layers}
+\begin{tabular}{|p{2.5cm}|p{4.5cm}|p{5cm}|}
+\hline
+\textbf{Tầng} & \textbf{Trách nhiệm} & \textbf{Thành phần chính} \\
+\hline
+Domain & Chứa thực thể nghiệp vụ (Entities) và quy tắc nghiệp vụ thuần túy. Định nghĩa các giao diện trừu tượng cho Repository và Service, đảm bảo nguyên tắc Dependency Inversion. & User, Company, Job, CV, Application; IUserRepository, IJobRepository, IPasswordService, ITokenService,... \\
+\hline
+Application & Điều phối luồng nghiệp vụ thông qua các Use Case. Phụ thuộc vào Domain nhưng không biết chi tiết cài đặt của Infrastructure, cho phép unit testing độc lập. & CreateUserUseCase, LoginUserUseCase, ApplyJobUseCase, CreateCVUseCase, GetRecommendedJobsUseCase,... \\
+\hline
+Infrastructure & Cài đặt cụ thể các giao diện từ Domain. Cho phép thay đổi công nghệ mà không ảnh hưởng logic nghiệp vụ. & Repository (Prisma + PostgreSQL), External Services (Firebase), Security (bcrypt, JWT), Utility (PDF export) \\
+\hline
+Presentation & Xử lý tương tác với người dùng và hệ thống bên ngoài qua RESTful API. & Controllers, Middlewares (Authentication, Authorization), Validators, DTOs \\
+\hline
+\end{tabular}
+\end{table}
+
+% \begin{figure}[H]
+% 	\centering
+% 	\includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/LayerDependency.png}
+% 	\caption{Sơ đồ phụ thuộc giữa các tầng trong hệ thống}
+%     \label{fig:layer-dependency}
+% \end{figure}
+
+
+
+\subsection{Tổ chức Package}
+\label{subsec:package-organization}
+ Mỗi package chứa đầy đủ các tầng kiến trúc bên trong, cho phép phát triển và bảo trì độc lập giữa các module chức năng.
+
+\begin{table}[H]
+\centering
+\caption{Các Package trong hệ thống}
+\label{tab:packages}
+\begin{tabular}{|p{3cm}|p{5cm}|p{4cm}|}
+\hline
+\textbf{Package} & \textbf{Trách nhiệm} & \textbf{Thành phần chính} \\
+\hline
+User & Quản lý người dùng, xác thực, phân quyền & User, UserProfile \\
+\hline
+Company & Quản lý công ty, thành viên, lời mời & Company, CompanyMember \\
+\hline
+Job & Quản lý tin tuyển dụng, tìm kiếm, gợi ý & Job, SavedJob \\
+\hline
+CV & Quản lý hồ sơ ứng viên, xuất PDF & CV, CVTemplate, SavedCV \\
+\hline
+Application & Quản lý đơn ứng tuyển, trạng thái & Application \\
+\hline
+Notification & Quản lý thông báo realtime & Notification \\
+\hline
+\end{tabular}
+\end{table}
+
+% === SƠ ĐỒ TỔNG QUAN LAYER ===
+% Chèn hình: \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/LayerOverview.png}
+%
+% Mermaid code - Sơ đồ Layer tổng quan:
+% ```mermaid
+% graph TB
+%     subgraph "Presentation Layer"
+%         Controllers[Controllers]
+%         Routes[Routes]
+%         Validators[Validators]
+%         Middleware[Middleware]
+%     end
+%
+%     subgraph "Application Layer"
+%         UseCases[Use Cases]
+%         DTOs[DTOs]
+%         Mappers[Output Mappers]
+%     end
+%
+%     subgraph "Domain Layer"
+%         Entities[Entities]
+%         RepoInterfaces[Repository Interfaces]
+%         ServiceInterfaces[Service Interfaces]
+%         Enums[Enums]
+%     end
+%
+%     subgraph "Infrastructure Layer"
+%         RepoImpl[Repository Implementations]
+%         ServiceImpl[Service Implementations]
+%         Database[(PostgreSQL)]
+%         External[External Services]
+%     end
+%
+%     Controllers --> UseCases
+%     UseCases --> Entities
+%     UseCases --> RepoInterfaces
+%     RepoImpl -.-> RepoInterfaces
+%     ServiceImpl -.-> ServiceInterfaces
+%     RepoImpl --> Database
+%     ServiceImpl --> External
+% ```
+
+\subsubsection{Package User}
+
+Package User quản lý toàn bộ vòng đời người dùng trong hệ thống, bao gồm đăng ký tài khoản, xác thực, quản lý hồ sơ cá nhân và phân quyền truy cập. Package này đóng vai trò trung tâm, cung cấp thông tin người dùng cho các package khác thông qua các giao diện được định nghĩa.
+
+% === SƠ ĐỒ THÀNH PHẦN PACKAGE USER ===
+% Chèn hình: \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/PackageUser.png}
+%
+% Mermaid code - Component Diagram Package User:
+% ```mermaid
+% graph TB
+%     subgraph "Package User"
+%         subgraph "interfaces"
+%             UC[UserController]
+%             UR[user.routes]
+%             UV[UserValidators]
+%         end
+%
+%         subgraph "application"
+%             Register[RegisterUserUseCase]
+%             Login[LoginUserUseCase]
+%             GetProfile[GetUserProfileUseCase]
+%             UpdateProfile[UpdateUserProfileUseCase]
+%             ChangePass[ChangePasswordUseCase]
+%             UploadAvatar[UploadAvatarUseCase]
+%         end
+%
+%         subgraph "domain"
+%             User[User Entity]
+%             IUserRepo[IUserRepository]
+%             UserEnums[UserRole, UserStatus, Gender]
+%         end
+%
+%         subgraph "infrastructure"
+%             PrismaUser[PrismaUserRepository]
+%             UserMapper[UserMapper]
+%         end
+%     end
+%
+%     UC --> Register
+%     UC --> Login
+%     UC --> GetProfile
+%     Register --> IUserRepo
+%     PrismaUser -.-> IUserRepo
+% ```
+
+\subsubsection{Package Company}
+
+Package Company quản lý thông tin doanh nghiệp và cấu trúc tổ chức nội bộ. Package hỗ trợ mô hình đa thành viên, cho phép một công ty có nhiều nhà tuyển dụng với các vai trò khác nhau thông qua cơ chế lời mời và phê duyệt.
+
+% === SƠ ĐỒ THÀNH PHẦN PACKAGE COMPANY ===
+% Chèn hình: \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/PackageCompany.png}
+%
+% Mermaid code - Component Diagram Package Company:
+% ```mermaid
+% graph TB
+%     subgraph "Package Company"
+%         subgraph "interfaces"
+%             CC[CompanyController]
+%             CR[company.routes]
+%         end
+%
+%         subgraph "application"
+%             RegCompany[RegisterCompanyUseCase]
+%             GetCompany[GetCompanyUseCase]
+%             UpdateCompany[UpdateCompanyUseCase]
+%             InviteMember[InviteMemberUseCase]
+%             AcceptInvite[AcceptInvitationUseCase]
+%             GetMembers[GetCompanyMembersUseCase]
+%         end
+%
+%         subgraph "domain"
+%             Company[Company Entity]
+%             Member[CompanyMember Entity]
+%             Invitation[CompanyMemberInvitation]
+%             ICompanyRepo[ICompanyRepository]
+%             IMemberRepo[ICompanyMemberRepository]
+%         end
+%
+%         subgraph "infrastructure"
+%             PrismaCompany[PrismaCompanyRepository]
+%             PrismaMember[PrismaCompanyMemberRepository]
+%         end
+%     end
+%
+%     CC --> RegCompany
+%     CC --> InviteMember
+%     RegCompany --> ICompanyRepo
+%     InviteMember --> IMemberRepo
+%     PrismaCompany -.-> ICompanyRepo
+% ```
+
+\subsubsection{Package Job}
+
+Package Job xử lý toàn bộ nghiệp vụ liên quan đến tin tuyển dụng, từ đăng tin, tìm kiếm, lọc theo tiêu chí đến các tính năng nâng cao như gợi ý việc làm phù hợp và việc làm tương tự.
+
+% === SƠ ĐỒ THÀNH PHẦN PACKAGE JOB ===
+% Chèn hình: \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/PackageJob.png}
+%
+% Mermaid code - Component Diagram Package Job:
+% ```mermaid
+% graph TB
+%     subgraph "Package Job"
+%         subgraph "interfaces"
+%             JC[JobController]
+%             JR[job.routes]
+%         end
+%
+%         subgraph "application"
+%             CreateJob[CreateJobUseCase]
+%             SearchJobs[SearchJobsUseCase]
+%             GetJob[GetJobDetailUseCase]
+%             UpdateJob[UpdateJobUseCase]
+%             SaveJob[SaveJobUseCase]
+%             SimilarJobs[GetSimilarJobsUseCase]
+%             RecommendJobs[GetRecommendedJobsUseCase]
+%         end
+%
+%         subgraph "domain"
+%             Job[Job Entity]
+%             SavedJob[SavedJob Entity]
+%             IJobRepo[IJobRepository]
+%             ISavedJobRepo[ISavedJobRepository]
+%             JobEnums[JobStatus, JobType, ExperienceLevel]
+%         end
+%
+%         subgraph "infrastructure"
+%             PrismaJob[PrismaJobRepository]
+%             PrismaSavedJob[PrismaSavedJobRepository]
+%         end
+%     end
+%
+%     JC --> CreateJob
+%     JC --> SearchJobs
+%     CreateJob --> IJobRepo
+%     SaveJob --> ISavedJobRepo
+%     PrismaJob -.-> IJobRepo
+% ```
+
+\subsubsection{Package CV}
+
+Package CV quản lý hồ sơ ứng viên với cấu trúc phức tạp bao gồm thông tin cá nhân, học vấn, kinh nghiệm làm việc, kỹ năng và các thành phần khác. Package hỗ trợ xuất CV ra định dạng PDF với nhiều mẫu template khác nhau.
+
+% === SƠ ĐỒ THÀNH PHẦN PACKAGE CV ===
+% Chèn hình: \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/PackageCV.png}
+%
+% Mermaid code - Component Diagram Package CV:
+% ```mermaid
+% graph TB
+%     subgraph "Package CV"
+%         subgraph "interfaces"
+%             CVC[CVController]
+%             CVR[cv.routes]
+%             TempC[CVTemplateController]
+%         end
+%
+%         subgraph "application"
+%             CreateCV[CreateCVUseCase]
+%             GetCV[GetCVDetailUseCase]
+%             UpdateCV[UpdateCVUseCase]
+%             ExportCV[ExportCVToPDFUseCase]
+%             SaveCV[SaveCVUseCase]
+%             GetSavedCVs[GetSavedCVsUseCase]
+%         end
+%
+%         subgraph "domain"
+%             CV[CV Entity]
+%             Education[Education]
+%             Experience[WorkExperience]
+%             Skill[Skill]
+%             Template[CVTemplate]
+%             ICVRepo[ICVRepository]
+%             ISavedCVRepo[ISavedCVRepository]
+%         end
+%
+%         subgraph "infrastructure"
+%             PrismaCV[PrismaCVRepository]
+%             PrismaSavedCV[PrismaSavedCVRepository]
+%         end
+%     end
+%
+%     CVC --> CreateCV
+%     CVC --> ExportCV
+%     CreateCV --> ICVRepo
+%     PrismaCV -.-> ICVRepo
+% ```
+
+\subsubsection{Package Application}
+
+Package Application xử lý quy trình ứng tuyển việc làm, quản lý trạng thái đơn ứng tuyển từ khi nộp đến khi có kết quả cuối cùng. Package này tương tác với cả Package Job và Package CV để xác thực thông tin.
+
+% === SƠ ĐỒ THÀNH PHẦN PACKAGE APPLICATION ===
+% Chèn hình: \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/PackageApplication.png}
+%
+% Mermaid code - Component Diagram Package Application:
+% ```mermaid
+% graph TB
+%     subgraph "Package Application"
+%         subgraph "interfaces"
+%             AC[ApplicationController]
+%             AR[application.routes]
+%         end
+%
+%         subgraph "application"
+%             ApplyJob[ApplyJobUseCase]
+%             GetApps[GetApplicationsUseCase]
+%             UpdateStatus[UpdateApplicationStatusUseCase]
+%             Withdraw[WithdrawApplicationUseCase]
+%             GetByJob[GetApplicationsByJobUseCase]
+%         end
+%
+%         subgraph "domain"
+%             Application[Application Entity]
+%             IAppRepo[IApplicationRepository]
+%             AppEnums[ApplicationStatus]
+%         end
+%
+%         subgraph "infrastructure"
+%             PrismaApp[PrismaApplicationRepository]
+%             AppMapper[ApplicationMapper]
+%         end
+%     end
+%
+%     AC --> ApplyJob
+%     AC --> UpdateStatus
+%     ApplyJob --> IAppRepo
+%     PrismaApp -.-> IAppRepo
+% ```
+
+\subsubsection{Package Notification}
+
+Package Notification quản lý hệ thống thông báo realtime, cho phép gửi thông báo đến người dùng khi có các sự kiện quan trọng như đơn ứng tuyển mới, thay đổi trạng thái, hoặc lời mời tham gia công ty.
+
+% === SƠ ĐỒ THÀNH PHẦN PACKAGE NOTIFICATION ===
+% Chèn hình: \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/PackageNotification.png}
+%
+% Mermaid code - Component Diagram Package Notification:
+% ```mermaid
+% graph TB
+%     subgraph "Package Notification"
+%         subgraph "interfaces"
+%             NC[NotificationController]
+%             NR[notification.routes]
+%         end
+%
+%         subgraph "application"
+%             CreateNotif[CreateNotificationUseCase]
+%             GetNotifs[GetNotificationsUseCase]
+%             MarkRead[MarkNotificationReadUseCase]
+%             MarkAllRead[MarkAllNotificationsReadUseCase]
+%             DeleteNotif[DeleteNotificationUseCase]
+%         end
+%
+%         subgraph "domain"
+%             Notification[Notification Entity]
+%             INotifRepo[INotificationRepository]
+%             NotifEnums[NotificationType]
+%         end
+%
+%         subgraph "infrastructure"
+%             PrismaNotif[PrismaNotificationRepository]
+%             NotifMapper[NotificationMapper]
+%         end
+%     end
+%
+%     NC --> GetNotifs
+%     NC --> MarkRead
+%     CreateNotif --> INotifRepo
+%     PrismaNotif -.-> INotifRepo
+% ```
+
+\subsection{Quan hệ giữa các Package}
+\label{subsec:package-dependencies}
+
+Các package trong hệ thống được thiết kế với mức độ coupling thấp, giao tiếp thông qua các giao diện trừu tượng và DTO. Hình \ref{fig:package-dependencies} thể hiện quan hệ phụ thuộc giữa các package.
+
+% === SƠ ĐỒ QUAN HỆ GIỮA CÁC PACKAGE ===
+% Chèn hình: \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/PackageDependencies.png}
+%
+% Mermaid code - Package Dependencies:
+% ```mermaid
+% graph LR
+%     subgraph "Feature Packages"
+%         User[User Package]
+%         Company[Company Package]
+%         Job[Job Package]
+%         CV[CV Package]
+%         Application[Application Package]
+%         Notification[Notification Package]
+%     end
+%
+%     subgraph "Shared"
+%         SharedDomain[Shared Domain]
+%         SharedInfra[Shared Infrastructure]
+%     end
+%
+%     Company --> User
+%     Job --> Company
+%     CV --> User
+%     Application --> Job
+%     Application --> CV
+%     Application --> User
+%     Notification --> User
+%
+%     User --> SharedDomain
+%     Company --> SharedDomain
+%     Job --> SharedDomain
+%     CV --> SharedDomain
+%     Application --> SharedDomain
+%     Notification --> SharedDomain
+%
+%     User --> SharedInfra
+%     Company --> SharedInfra
+%     Job --> SharedInfra
+%     CV --> SharedInfra
+% ```
+
+\begin{figure}[H]
+	\centering
+	% \includegraphics[width=\linewidth]{Figures/Chương 4 Thiết kế/41/PackageDependencies.png}
+	\caption{Sơ đồ quan hệ phụ thuộc giữa các Package}
+    \label{fig:package-dependencies}
+\end{figure}
+

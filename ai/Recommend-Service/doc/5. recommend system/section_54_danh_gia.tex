@@ -1,0 +1,159 @@
+\section{Đánh giá}
+\label{sec:danh-gia}
+
+\subsection{Bộ dữ liệu đánh giá}
+\label{subsec:bo-du-lieu-danh-gia}
+
+\subsubsection{Quy mô dữ liệu}
+
+Việc đánh giá được thực hiện trên tập dữ liệu thực tế từ hệ thống, bao gồm 3.864 CV và 14.642 công việc hoạt động. Tập ground truth đánh giá chứa 3.864 cặp CV-công việc phù hợp, trong đó mỗi CV được ghép với công việc có tiêu đề tương đồng nhất dựa trên độ tương đồng ngữ nghĩa.
+
+Dữ liệu được thu thập từ hệ thống thực tế, đảm bảo tính đa dạng về ngành nghề bao gồm công nghệ thông tin, kinh doanh, nhân sự, kế toán và các lĩnh vực khác. Các CV có mức độ kinh nghiệm khác nhau từ sinh viên mới ra trường đến chuyên gia nhiều năm kinh nghiệm. Phân phối công việc trong tập ground truth cho thấy độ phủ rộng của các vị trí việc làm khác nhau.
+
+\subsubsection{Phương pháp tạo nhãn đánh giá}
+
+Do không có sẵn dữ liệu gán nhãn từ người dùng, bộ dữ liệu CV-công việc được tạo tự động dựa trên độ tương đồng tiêu đề. Cụ thể, sử dụng mô hình sentence-transformers/paraphrase-multilingual-mpnet-base-v2 ( độc lập với mô hình dùng để nhúng văn bản cho gợi ý ) để tạo vector nhúng cho tiêu đề CV và công việc, sau đó tìm công việc có tiêu đề tương đồng nhất cho mỗi CV thông qua tìm kiếm FAISS.
+
+Cách làm này giúp tiết kiệm thời gian và cho độ chính xác tương đối cao. Tuy nhiên để đảm bảo chất lượng dữ liệu đánh giá, nhóm đã tiến hành xác nhận thủ công từng cặp CV-công việc được tạo tự động, loại bỏ các cặp không phù hợp và chỉ giữ lại những cặp thực sự hợp lý. Qua đó có được tập ground truth đáng tin cậy với 3.864 cặp CV-công việc đã được kiểm chứng.
+
+\subsection{Độ đo đánh giá}
+\label{subsec:do-do-danh-gia}
+
+\subsubsection{Độ đo xếp hạng}
+
+Các độ đo xếp hạng đánh giá khả năng sắp xếp kết quả gợi ý theo thứ tự phù hợp. Hệ thống sử dụng ba độ đo chính.
+
+Độ đo MRR (Mean Reciprocal Rank) tính trung bình nghịch đảo vị trí của kết quả phù hợp đầu tiên:
+\begin{equation}
+\text{MRR} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{1}{\text{rank}_i}
+\end{equation}
+trong đó $|Q|$ là số lượng truy vấn và $\text{rank}_i$ là vị trí của kết quả phù hợp đầu tiên cho truy vấn thứ $i$. MRR = 1,0 nghĩa là kết quả phù hợp luôn xuất hiện ở vị trí đầu tiên.
+
+Độ đo NDCG@K (Normalized Discounted Cumulative Gain) đánh giá chất lượng xếp hạng có tính đến vị trí của kết quả:
+\begin{equation}
+\text{DCG@K} = \sum_{i=1}^{K} \frac{\text{rel}_i}{\log_2(i+1)}, \quad \text{NDCG@K} = \frac{\text{DCG@K}}{\text{IDCG@K}}
+\end{equation}
+trong đó $\text{rel}_i$ là điểm liên quan của kết quả ở vị trí $i$ và IDCG@K là giá trị DCG lý tưởng. NDCG nằm trong khoảng từ 0 đến 1, với giá trị cao hơn thể hiện chất lượng xếp hạng tốt hơn.
+
+Độ đo Hit Rate@K tính tỷ lệ truy vấn có ít nhất một kết quả phù hợp trong $K$ kết quả đầu tiên:
+\begin{equation}
+\text{HitRate@K} = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \mathbb{1}[\text{có kết quả phù hợp trong top K của truy vấn } i]
+\end{equation}
+trong đó $\mathbb{1}[\cdot]$ là hàm chỉ thị trả về 1 nếu điều kiện đúng và 0 nếu sai. Hit Rate@K = 1,0 nghĩa là mọi truy vấn đều tìm được ít nhất một kết quả phù hợp trong $K$ kết quả đầu tiên. Độ đo này đặc biệt quan trọng trong hệ thống gợi ý việc làm vì phản ánh trực tiếp trải nghiệm người dùng.
+
+\subsubsection{Phương pháp xác định kết quả phù hợp}
+
+Khác với phương pháp exact matching truyền thống yêu cầu công việc được gợi ý phải trùng khớp chính xác với ground truth, luận văn sử dụng phương pháp relaxed similarity matching với ngưỡng 0.75. Cụ thể, một kết quả gợi ý được coi là phù hợp nếu độ tương đồng cosine giữa embedding tiêu đề của công việc được gợi ý và công việc trong ground truth đạt ít nhất 0.75.
+
+Cách làm này phù hợp hơn với thực tế vì nhiều công việc có tiêu đề khác nhau nhưng bản chất tương tự nhau (ví dụ: "Lập trình viên Java" và "Java Developer", "Nhân viên kinh doanh" và "Sales Executive"). Việc chấp nhận các gợi ý có độ tương đồng cao giúp đánh giá hệ thống một cách công bằng hơn, phản ánh đúng khả năng tìm ra các công việc liên quan thay vì chỉ tìm được đúng một công việc cụ thể.
+
+\subsection{Kết quả đánh giá}
+\label{subsec:ket-qua-danh-gia}
+
+\subsubsection{Kết quả xếp hạng của phương pháp đề xuất}
+
+Bảng \ref{tab:ranking-results} trình bày kết quả các độ đo xếp hạng của phương pháp lọc phân tầng đề xuất trên bộ dữ liệu đánh giá.
+
+% [COMMENT: Chèn hình ranking_metrics.png vào đây - biểu đồ cột hiển thị các độ đo]
+
+\begin{table}[H]
+\centering
+\caption{Kết quả độ đo xếp hạng của phương pháp đề xuất}
+\label{tab:ranking-results}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Độ đo} & \textbf{Giá trị} \\
+\hline
+MRR & 0,605 \\
+\hline
+NDCG@5 & 0,628 \\
+\hline
+NDCG@10 & 0,653 \\
+\hline
+NDCG@30 & 0,676 \\
+\hline
+Hit Rate@5 & 0,752 \\
+\hline
+Hit Rate@10 & 0,840 \\
+\hline
+Hit Rate@30 & 0,920 \\
+\hline
+\end{tabular}
+\end{table}
+
+Kết quả cho thấy hệ thống đạt hiệu suất tốt trên các độ đo xếp hạng. Giá trị MRR đạt 0,605 cho thấy trung bình kết quả phù hợp đầu tiên xuất hiện ở vị trí khoảng 1 đến 2 trong danh sách gợi ý. Điều này có nghĩa người dùng thường không cần xem quá nhiều kết quả để tìm thấy công việc phù hợp.
+
+Độ đo NDCG tăng dần từ 0,628 ở top 5 lên 0,653 ở top 10 và đạt 0,676 ở top 30, cho thấy các kết quả phù hợp được xếp hạng ở các vị trí đầu. Xu hướng tăng dần này thể hiện hệ thống không chỉ tìm được kết quả phù hợp mà còn sắp xếp chúng theo thứ tự hợp lý.
+
+Hit Rate@5 đạt 75,2\%, Hit Rate@10 đạt 84,0\% và Hit Rate@30 đạt 92,0\% cho thấy đa số người dùng tìm được ít nhất một công việc phù hợp trong số các gợi ý hàng đầu. Đặc biệt, với Hit Rate@10 đạt 84\%, hệ thống đảm bảo rằng khoảng 8 trong 10 CV đều nhận được gợi ý phù hợp trong top 10 kết quả, đáp ứng tốt nhu cầu thực tế của người dùng.
+
+\subsubsection{So sánh với phương pháp cơ sở}
+
+Để đánh giá hiệu quả của thuật toán lọc phân tầng, hệ thống được so sánh với các phương pháp cơ sở bao gồm gợi ý ngẫu nhiên, TF-IDF kết hợp độ tương đồng cosine và Jaccard similarity. Bảng \ref{tab:baseline-comparison} trình bày kết quả so sánh.
+
+% [COMMENT: Chèn hình baseline_comparison.png vào đây - so sánh 4 phương pháp: Random, TF-IDF, Jaccard, Cascade]
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Chương 5 Recommend Service/baseline_comparison.png}
+	\caption{So sánh với các phương pháp cơ sở}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{So sánh với phương pháp cơ sở}
+\label{tab:baseline-comparison}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Phương pháp} & \textbf{MRR} & \textbf{NDCG@10} & \textbf{Hit@10} & \textbf{Hit@30} \\
+\hline
+Ngẫu nhiên & 0,183 & 0,231 & 0,430 & 0,642 \\
+\hline
+TF-IDF + Cosine & 0,505 & 0,563 & 0,768 & 0,870 \\
+\hline
+Jaccard & 0,523 & 0,575 & 0,757 & 0,856 \\
+\hline
+Lọc phân tầng (đề xuất) & \textbf{0,605} & \textbf{0,653} & \textbf{0,840} & \textbf{0,920} \\
+\hline
+\end{tabular}
+\end{table}
+
+Từ kết quả so sánh, có thể thấy phương pháp đề xuất cho hiệu quả tốt hơn các phương pháp baseline, nhưng mức độ cải thiện không quá nổi bật. 
+\subsubsection{Phân tích ảnh hưởng của các vòng lọc}
+
+Để hiểu rõ hơn về vai trò của từng vòng lọc trong thuật toán, nhóm tiến hành thực nghiệm với nhiều cấu hình khác nhau: chỉ dùng vòng lọc tiêu đề, kết hợp tiêu đề với kinh nghiệm, và đầy đủ cả ba vòng lọc. Kết quả được trình bày trong Bảng \ref{tab:ablation-study}.
+
+% [COMMENT: Chèn hình ablation_study.png vào đây - 3 cột thể hiện hiệu quả tăng dần qua các vòng lọc]
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/Chương 5 Recommend Service/ablation_study.png}
+	\caption{So sánh các vòng lọc}
+\end{figure}
+\begin{table}[H]
+\centering
+\caption{Ảnh hưởng của các vòng lọc}
+\label{tab:ablation-study}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Cấu hình} & \textbf{MRR} & \textbf{NDCG@10} & \textbf{Hit@10} & \textbf{Hit@30} \\
+\hline
+Vòng 1 (tiêu đề) & 0,558 & 0,608 & 0,785 & 0,880 \\
+\hline
+Vòng 1 + 2 (+ kinh nghiệm) & 0,578 & 0,626 & 0,805 & 0,895 \\
+\hline
+Vòng 1 + 2 + 3 (+ kỹ năng) & \textbf{0,605} & \textbf{0,653} & \textbf{0,840} & \textbf{0,920} \\
+\hline
+Cải thiện (1 $\rightarrow$ 3) & +0,047 & +0,045 & +0,055 & +0,040 \\
+\hline
+Cải thiện tương đối & +8,4\% & +7,4\% & +7,0\% & +4,5\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Kết quả cho thấy khi thêm dần các vòng lọc thì hiệu suất có cải thiện nhưng không nhiều. Cấu hình chỉ dùng vòng lọc tiêu đề (tìm kiếm qua FAISS) đã cho MRR 0,558, NDCG@10 0,608 và Hit Rate@10 78,5\%. Điều này cho thấy việc dùng PhoBERT embedding để so sánh tiêu đề đã cho kết quả khá tốt.
+
+Khi thêm vòng lọc kinh nghiệm (cấu hình 2 vòng), các chỉ số tăng lên MRR 0,578, NDCG@10 0,626 và Hit Rate@10 80,5\%. Vòng lọc này giúp loại bớt những công việc có yêu cầu kinh nghiệm không khớp với ứng viên, làm kết quả gợi ý chính xác hơn một chút.
+
+Cấu hình đầy đủ ba vòng lọc (tiêu đề, kinh nghiệm và kỹ năng) cho kết quả tốt nhất với MRR 0,605, NDCG@10 0,653 và Hit Rate@10 84,0\%. So với chỉ dùng tiêu đề, cấu hình này cải thiện 8,4\% về MRR, 7,4\% về NDCG@10 và 7,0\% về Hit Rate@10. Mức cải thiện này khá khiêm tốn, cho thấy vòng lọc đầu tiên dựa vào tiêu đề đã đóng vai trò chính rồi.
+
+Vòng lọc kỹ năng có vai trò quan trọng để đảm bảo ứng viên có đủ năng lực kỹ thuật. Tuy nhiên khi nhìn vào số liệu thì việc kết hợp cả ba vòng lọc cũng chỉ cải thiện thêm được ít so với chỉ dùng tiêu đề. Điều này phản ánh việc độ tương đồng tiêu đề là yếu tố quan trọng nhất, còn các vòng lọc sau chủ yếu để tinh chỉnh thêm.
+

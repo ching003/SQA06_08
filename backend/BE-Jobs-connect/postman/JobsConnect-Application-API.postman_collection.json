@@ -1,0 +1,359 @@
+{
+  "info": {
+    "_postman_id": "jobsconnect-application-api-001",
+    "name": "JobsConnect - Application API",
+    "description": "Collection cho các API Application của JobsConnect Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Candidate Operations",
+      "item": [
+        {
+          "name": "Apply for Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"application_id\", response.data.id);",
+                  "        pm.environment.set(\"job_id\", response.data.jobId);",
+                  "        pm.environment.set(\"cv_id\", response.data.cvId);",
+                  "        console.log(\"✅ Application submitted successfully\");",
+                  "        console.log(\"Application ID: \" + response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"jobId\": \"{{job_id}}\",\n    \"cvId\": \"{{cv_id}}\",\n    \"coverLetter\": \"I am very interested in this position and believe my skills and experience align perfectly with your requirements. I have 5+ years of experience in software development and am excited about the opportunity to contribute to your team.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/applications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "applications"]
+            },
+            "description": "Apply for a job. Yêu cầu CANDIDATE role.\n\n**Lưu ý:**\n- jobId: ID của job muốn apply (required)\n- cvId: ID của CV dùng để apply (required, phải thuộc về user)\n- coverLetter: Thư xin việc (optional, max 5000 chars)\n- User không thể apply 2 lần cho cùng 1 job\n- Job phải ACTIVE và chưa hết hạn"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Applications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.length > 0) {",
+                  "        pm.environment.set(\"application_id\", response.data[0].id);",
+                  "        console.log(\"✅ Applications retrieved successfully\");",
+                  "        console.log(\"Total applications: \" + response.data.length);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications/my",
+              "host": ["{{base_url}}"],
+              "path": ["api", "applications", "my"]
+            },
+            "description": "Lấy danh sách tất cả applications của candidate hiện tại. Yêu cầu CANDIDATE role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Application Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Application retrieved successfully\");",
+                  "        console.log(\"Status: \" + response.data.status);",
+                  "        console.log(\"Job: \" + response.data.job.title);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications/{{application_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "applications", "{{application_id}}"]
+            },
+            "description": "Lấy chi tiết application. Candidate chỉ xem được applications của mình. Recruiter xem được applications của jobs trong company của họ. Admin xem được tất cả.\n\n**Response bao gồm:**\n- Application info (status, coverLetter, notes, dates)\n- Full job details (với company, salary, benefits, requirements)\n- Full CV details (với tất cả nested data: educations, workExperiences, skills, etc.)\n- User info (candidate info)"
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Application withdrawn successfully\");",
+                  "        console.log(\"New status: \" + response.data.status);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/api/applications/{{application_id}}/withdraw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "applications", "{{application_id}}", "withdraw"]
+            },
+            "description": "Rút đơn ứng tuyển. Yêu cầu CANDIDATE role.\n\n**Lưu ý:**\n- Chỉ có thể withdraw khi status là PENDING hoặc REVIEWING\n- Không thể withdraw nếu status là ACCEPTED hoặc REJECTED\n- Status sẽ được đổi thành CANCELLED"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Recruiter Operations",
+      "item": [
+        {
+          "name": "Get Applications by Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.length > 0) {",
+                  "        pm.environment.set(\"application_id\", response.data[0].id);",
+                  "        console.log(\"✅ Applications retrieved successfully\");",
+                  "        console.log(\"Total applications: \" + response.data.length);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/jobs/{{job_id}}/applications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "jobs", "{{job_id}}", "applications"]
+            },
+            "description": "Lấy danh sách tất cả applications của một job. Yêu cầu RECRUITER role và phải là member của company sở hữu job.\n\n**Response bao gồm:**\n- Application info (status, coverLetter, dates)\n- User info (candidate info)\n- CV summary (basic CV info, không có full nested data)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Application Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Application status updated successfully\");",
+                  "        console.log(\"New status: \" + response.data.status);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"REVIEWING\",\n    \"notes\": \"Candidate has strong technical background. Schedule interview.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/applications/{{application_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "applications", "{{application_id}}", "status"]
+            },
+            "description": "Cập nhật status của application. Yêu cầu RECRUITER role và phải là member của company sở hữu job.\n\n**Lưu ý:**\n- status: PENDING, REVIEWING, ACCEPTED, REJECTED, CANCELLED (required)\n- notes: Ghi chú nội bộ (optional, max 2000 chars)\n- Khi update status, candidate sẽ nhận được notification\n- Valid status transitions: PENDING -> REVIEWING -> ACCEPTED/REJECTED"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Application Details (Recruiter)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Application retrieved successfully\");",
+                  "        console.log(\"Candidate: \" + response.data.user.fullName);",
+                  "        console.log(\"Status: \" + response.data.status);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/applications/{{application_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "applications", "{{application_id}}"]
+            },
+            "description": "Lấy chi tiết application. Recruiter chỉ xem được applications của jobs trong company của họ.\n\n**Response bao gồm:**\n- Full application details\n- Full job details\n- Full CV details (với tất cả nested data)\n- Candidate user info"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "application_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "job_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cv_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
+

@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(timeout 10 npm run start:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm run build:*)",
+      "Bash(cat:*)",
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(npx prisma db seed:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(done)",
+      "Bash(npm run dev:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run cron:daily:*)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(timeout 15 npm run dev:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

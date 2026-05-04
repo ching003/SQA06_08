@@ -1,0 +1,441 @@
+{
+  "info": {
+    "_postman_id": "jobsconnect-notification-api-001",
+    "name": "JobsConnect - Notification API",
+    "description": "Collection cho các API Notification của JobsConnect Backend. Tất cả endpoints đều yêu cầu authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Notifications",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data array\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('data');",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Response has pagination\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('pagination');",
+                  "    pm.expect(response.pagination).to.have.property('page');",
+                  "    pm.expect(response.pagination).to.have.property('limit');",
+                  "    pm.expect(response.pagination).to.have.property('total');",
+                  "    pm.expect(response.pagination).to.have.property('totalPages');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.length > 0) {",
+                  "        pm.environment.set(\"notification_id\", response.data[0].id);",
+                  "        console.log(\"✅ Notifications retrieved successfully\");",
+                  "        console.log(\"Total notifications: \" + response.pagination.total);",
+                  "        console.log(\"Unread count: \" + response.data.filter(n => !n.isRead).length);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "JWT token từ login"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/my?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "my"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page (default: 20, max: 100)"
+                },
+                {
+                  "key": "type",
+                  "value": "APPLICATION_RECEIVED",
+                  "description": "Filter by type: APPLICATION_RECEIVED, APPLICATION_STATUS_CHANGED, COMPANY_REGISTRATION, etc. (optional)",
+                  "disabled": true
+                },
+                {
+                  "key": "isRead",
+                  "value": "false",
+                  "description": "Filter by read status: true/false (optional)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lấy danh sách notifications của user hiện tại với pagination và filters"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notification By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has notification data\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response).to.have.property('data');",
+                  "    pm.expect(response.data).to.have.property('id');",
+                  "    pm.expect(response.data).to.have.property('type');",
+                  "    pm.expect(response.data).to.have.property('title');",
+                  "    pm.expect(response.data).to.have.property('message');",
+                  "    pm.expect(response.data).to.have.property('isRead');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Notification retrieved successfully\");",
+                  "        console.log(\"Notification ID: \" + response.data.id);",
+                  "        console.log(\"Type: \" + response.data.type);",
+                  "        console.log(\"Is Read: \" + response.data.isRead);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "JWT token từ login"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/{{notification_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "{{notification_id}}"]
+            },
+            "description": "Lấy thông tin chi tiết notification theo ID. User chỉ có thể xem notifications của chính mình."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Unread Count",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has unreadCount\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response).to.have.property('data');",
+                  "    pm.expect(response.data).to.have.property('unreadCount');",
+                  "    pm.expect(response.data.unreadCount).to.be.a('number');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Unread count retrieved successfully\");",
+                  "        console.log(\"Unread notifications: \" + response.data.unreadCount);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "JWT token từ login"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/unread-count",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "unread-count"]
+            },
+            "description": "Đếm số notifications chưa đọc của user hiện tại"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Update Notifications",
+      "item": [
+        {
+          "name": "Mark Notification As Read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Notification is marked as read\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response).to.have.property('data');",
+                  "    pm.expect(response.data).to.have.property('isRead');",
+                  "    pm.expect(response.data.isRead).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Notification marked as read\");",
+                  "        console.log(\"Notification ID: \" + response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "JWT token từ login"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/{{notification_id}}/read",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "{{notification_id}}", "read"]
+            },
+            "description": "Đánh dấu một notification là đã đọc. User chỉ có thể mark notifications của chính mình."
+          },
+          "response": []
+        },
+        {
+          "name": "Mark All Notifications As Read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response indicates success\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response).to.have.property('message');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        console.log(\"✅ All notifications marked as read\");",
+                  "        console.log(\"Message: \" + response.message);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "JWT token từ login"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/mark-all-read",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "mark-all-read"]
+            },
+            "description": "Đánh dấu tất cả notifications của user hiện tại là đã đọc"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Delete Notifications",
+      "item": [
+        {
+          "name": "Delete Notification",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response indicates success\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response).to.have.property('message');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success) {",
+                  "        console.log(\"✅ Notification deleted successfully\");",
+                  "        console.log(\"Message: \" + response.message);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "JWT token từ login"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/{{notification_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "{{notification_id}}"]
+            },
+            "description": "Xóa một notification. User chỉ có thể xóa notifications của chính mình."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete All Read Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has deletedCount\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response).to.have.property('data');",
+                  "    pm.expect(response.data).to.have.property('deletedCount');",
+                  "    pm.expect(response.data.deletedCount).to.be.a('number');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Read notifications deleted successfully\");",
+                  "        console.log(\"Deleted count: \" + response.data.deletedCount);",
+                  "        console.log(\"Message: \" + response.message);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "description": "JWT token từ login"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/read",
+              "host": ["{{base_url}}"],
+              "path": ["api", "notifications", "read"]
+            },
+            "description": "Xóa tất cả notifications đã đọc của user hiện tại"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "notification_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
+

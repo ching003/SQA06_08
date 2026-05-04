@@ -1,0 +1,78 @@
+% Subsection 4.2.3 - Đặc tả Phương thức
+\subsection{Đặc tả Phương thức}
+\label{subsec:method-specification}
+
+Phần này trình bày thuật toán xử lý của các phương thức quan trọng nhất. Chi tiết đầy đủ được trình bày trong Phụ lục~\ref{appendix:method-specification}.
+
+\subsubsection{Phương thức createCV}
+
+\begin{enumerate}
+    \item Kiểm tra User tồn tại trong hệ thống và số lượng CV hiện tại chưa vượt quá giới hạn 5 CV.
+    \item Tạo đối tượng CV mới với các thuộc tính cơ bản: title, fullName, email, phoneNumber, dateOfBirth, gender, address, currentPosition, summary, objective.
+    \item Tạo các thành phần con từ dữ liệu đầu vào: Education, WorkExperience, Skill, Project, Certification, Language.
+    \item Nếu đây là CV đầu tiên của User, gán \texttt{isMain = true}.
+    \item Lưu CV cùng tất cả thành phần con vào cơ sở dữ liệu trong một transaction.
+    \item Trả về đối tượng CV vừa tạo.
+\end{enumerate}
+
+\subsubsection{Phương thức applyJob}
+
+\begin{enumerate}
+    \item Truy vấn Job theo \texttt{jobId}, kiểm tra Job đang ACTIVE và chưa hết hạn (\texttt{expiresAt > now()}).
+    \item Kiểm tra CV thuộc về User hiện tại.
+    \item Kiểm tra User chưa có Application đang hoạt động (PENDING, REVIEWING, ACCEPTED) cho Job này.
+    \item Tạo đối tượng Application với \texttt{status = PENDING}, liên kết với candidate, CV, Job.
+    \item Tăng \texttt{applicationCount} của Job thêm 1.
+    \item Lưu Application và cập nhật Job vào cơ sở dữ liệu.
+    \item Tạo và gửi Notification loại \texttt{APPLICATION\_RECEIVED} đến Recruiter của Company.
+    \item Trả về đối tượng Application vừa tạo.
+\end{enumerate}
+
+\subsubsection{Phương thức updateApplicationStatus}
+
+\begin{enumerate}
+    \item Truy vấn Application theo \texttt{applicationId}.
+    \item Kiểm tra người gọi là thành viên của Company sở hữu Job liên quan.
+    \item Kiểm tra chuyển trạng thái hợp lệ: PENDING có thể sang REVIEWING hoặc REJECTED; REVIEWING có thể sang ACCEPTED hoặc REJECTED.
+    \item Cập nhật \texttt{status} và \texttt{updatedAt} của Application.
+    \item Lưu Application vào cơ sở dữ liệu.
+    \item Tạo và gửi Notification loại \texttt{APPLICATION\_STATUS\_CHANGED} đến ứng viên.
+    \item Trả về đối tượng Application đã cập nhật.
+\end{enumerate}
+
+\subsubsection{Phương thức postJob}
+
+\begin{enumerate}
+    \item Kiểm tra người gọi là thành viên của Company với vai trò OWNER, MANAGER hoặc RECRUITER.
+    \item Kiểm tra Company đang ở trạng thái ACTIVE.
+    \item Nếu Job được đăng với trạng thái ACTIVE, kiểm tra \texttt{expiresAt > now()}.
+    \item Tạo đối tượng Job với status mặc định DRAFT, \texttt{applicationCount = 0}.
+    \item Lưu Job vào cơ sở dữ liệu.
+    \item Nếu đăng ACTIVE, tạo và gửi Notification loại \texttt{JOB\_POSTED} đến followers của Company.
+    \item Trả về đối tượng Job vừa tạo.
+\end{enumerate}
+
+\subsubsection{Phương thức registerCompany}
+
+\begin{enumerate}
+    \item Kiểm tra User chưa là thành viên của bất kỳ công ty nào.
+    \item Kiểm tra \texttt{documentFile} đã được upload.
+    \item Upload documentFile lên Firebase Storage, lấy URL.
+    \item Tạo đối tượng Company với \texttt{status = PENDING} và các thông tin từ request.
+    \item Tạo đối tượng CompanyMember với \texttt{role = OWNER} liên kết User với Company.
+    \item Lưu Company và CompanyMember trong một transaction.
+    \item Tạo và gửi Notification loại \texttt{COMPANY\_REGISTRATION} đến tất cả Admin.
+    \item Trả về đối tượng Company vừa tạo.
+\end{enumerate}
+
+\subsubsection{Phương thức inviteMember}
+
+\begin{enumerate}
+    \item Truy vấn Company theo \texttt{companyId}, kiểm tra Company đang ACTIVE.
+    \item Kiểm tra người gọi có vai trò OWNER hoặc MANAGER trong Company.
+    \item Truy vấn User theo email, kiểm tra User tồn tại và chưa là thành viên của Company.
+    \item Tạo đối tượng CompanyMemberInvitation với \texttt{status = PENDING}, \texttt{expiresAt = now() + 7 ngày}.
+    \item Lưu Invitation vào cơ sở dữ liệu.
+    \item Tạo và gửi Notification loại \texttt{COMPANY\_INVITATION} đến User được mời.
+    \item Trả về đối tượng Invitation vừa tạo.
+\end{enumerate}

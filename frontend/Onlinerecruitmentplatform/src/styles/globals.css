@@ -1,0 +1,228 @@
+/* Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* Import Ant Design CSS */
+@import 'antd/dist/reset.css';
+
+/* Glassmorphism utility class using ::before pseudo-element */
+.glassmorphism {
+  position: relative !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  
+}
+
+.glassmorphism::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+}
+
+.glassmorphism>* {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Override position for nav element - allow fixed positioning for bottom nav */
+nav.glassmorphism {
+  position: fixed !important;
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+  .glassmorphism {
+    background: rgba(211, 236, 255, 0.95) !important;
+    background-color: rgba(211, 236, 255, 0.95) !important;
+  }
+}
+
+.glassmorphism:hover {
+  background: rgba(255, 255, 255, 0.45) !important;
+  background-color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Glassmorphism effect compatibility with Ant Design */
+.ant-card.glassmorphism {
+  background: transparent !important;
+}
+
+.glassmorphism .ant-card-body {
+  background: transparent !important;
+  background-color: transparent !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Make Ant Design inputs transparent inside glassmorphism */
+.glassmorphism .ant-input,
+.glassmorphism .ant-input-affix-wrapper {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.glassmorphism .ant-input:focus,
+.glassmorphism .ant-input-affix-wrapper:focus,
+.glassmorphism .ant-input-affix-wrapper-focused {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+/* Fix Ant Design Card borders - make borders sharper */
+.ant-card.glassmorphism {
+  border-color: rgba(255, 255, 255, 0.8) !important;
+  border-width: 1.5px !important;
+}
+
+.ant-card {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  border-width: 1px !important;
+}
+
+/* Fix borders in glassmorphism cards - make them sharper */
+.glassmorphism .border,
+.glassmorphism [class*="border"] {
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  border-width: 1px !important;
+}
+
+/* Fix divider borders */
+.glassmorphism .ant-divider {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  border-width: 1px !important;
+}
+
+/* Fix Ant Design Card margin-top being reset */
+.ant-card.mt-6 {
+  margin-top: 1.5rem !important;
+}
+
+.ant-card.mb-6 {
+  margin-bottom: 1.5rem !important;
+}
+
+/* Fix margin-top for divs containing Cards */
+div.mt-6>.ant-card:first-child {
+  margin-top: 0 !important;
+}
+
+/* Ensure space-y works with Ant Design Cards */
+.space-y-4>.ant-card+.ant-card {
+  margin-top: 1rem !important;
+}
+
+.space-y-3>.ant-card+.ant-card {
+  margin-top: 0.75rem !important;
+}
+
+/* Fix text overflow in demo buttons */
+.ant-btn {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.ant-btn .ant-typography {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Responsive padding for JobCard */
+@media (min-width: 640px) {
+  .glassmorphism .ant-card-body {
+    padding: 16px !important;
+  }
+}
+
+/* Ensure JobCard is responsive and doesn't overflow */
+.ant-card.glassmorphism {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.ant-card.glassmorphism .ant-card-body {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Glassmorphism for Modal */
+.glassmorphism-modal .ant-modal-content {
+  background: rgba(211, 236, 255, 0.9) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.glassmorphism-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+.glassmorphism-modal .ant-modal-body {
+  background: transparent !important;
+}
+
+/* Custom Carousel Dots Styling */
+.custom-carousel-dots li button {
+  background: rgba(255, 255, 255, 0.5) !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-carousel-dots li.slick-active button {
+  background: rgba(255, 255, 255, 1) !important;
+  width: 32px !important;
+  border-radius: 6px !important;
+}
+
+.custom-carousel-dots li:hover button {
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Position dots at bottom with padding */
+.custom-carousel-dots {
+  bottom: 20px !important;
+}
+
+/* Carousel Arrow Styling */
+.slick-arrow {
+  width: 50px !important;
+  height: 50px !important;
+  z-index: 10 !important;
+}
+
+.slick-arrow::before {
+  font-size: 30px !important;
+  color: white !important;
+  opacity: 0.8 !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.slick-arrow:hover::before {
+  opacity: 1 !important;
+}
+
+.slick-prev {
+  left: 20px !important;
+}
+
+.slick-next {
+  right: 20px !important;
+}

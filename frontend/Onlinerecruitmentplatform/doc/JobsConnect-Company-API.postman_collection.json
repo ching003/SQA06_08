@@ -1,0 +1,892 @@
+{
+  "info": {
+    "_postman_id": "jobsconnect-company-api-001",
+    "name": "JobsConnect - Company API",
+    "description": "Collection cho các API Company và Company Member của JobsConnect Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Company Operations",
+      "item": [
+        {
+          "name": "Register Company",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"company_id\", response.data.id);",
+                  "        pm.environment.set(\"company_name\", response.data.name);",
+                  "        console.log(\"✅ Company registered successfully\");",
+                  "        console.log(\"Company ID: \" + response.data.id);",
+                  "        console.log(\"Company Name: \" + response.data.name);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "TechCorp Vietnam",
+                  "type": "text",
+                  "description": "Tên công ty (required)"
+                },
+                {
+                  "key": "website",
+                  "value": "https://techcorp.vn",
+                  "type": "text",
+                  "description": "Website công ty (optional)"
+                },
+                {
+                  "key": "description",
+                  "value": "Leading technology company in Vietnam",
+                  "type": "text",
+                  "description": "Mô tả công ty (optional)"
+                },
+                {
+                  "key": "industry",
+                  "value": "Technology",
+                  "type": "text",
+                  "description": "Ngành nghề (optional)"
+                },
+                {
+                  "key": "companySize",
+                  "value": "MEDIUM",
+                  "type": "text",
+                  "description": "Quy mô công ty: STARTUP, SMALL, MEDIUM, LARGE, ENTERPRISE (optional)"
+                },
+                {
+                  "key": "foundedYear",
+                  "value": "2015",
+                  "type": "text",
+                  "description": "Năm thành lập (optional)"
+                },
+                {
+                  "key": "address",
+                  "value": "123 Tech Street, Ho Chi Minh City",
+                  "type": "text",
+                  "description": "Địa chỉ (optional)"
+                },
+                {
+                  "key": "phone",
+                  "value": "+84 28 1234 5678",
+                  "type": "text",
+                  "description": "Số điện thoại (optional)"
+                },
+                {
+                  "key": "email",
+                  "value": "contact@techcorp.vn",
+                  "type": "text",
+                  "description": "Email công ty (optional)"
+                },
+                {
+                  "key": "logo",
+                  "type": "file",
+                  "src": [],
+                  "description": "Logo công ty (image file - optional, max 5MB)"
+                },
+                {
+                  "key": "document",
+                  "type": "file",
+                  "src": [],
+                  "description": "Giấy chứng nhận công ty (image hoặc PDF - required, max 10MB)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/companies/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "register"]
+            },
+            "description": "Đăng ký company mới với upload logo và giấy tờ. User đăng ký sẽ tự động trở thành OWNER. Company sẽ có status PENDING, cần admin duyệt.\n\n**Lưu ý:**\n- Document (giấy tờ) là bắt buộc\n- Logo là tùy chọn\n- Logo: image file (JPEG, PNG, WebP) - max 5MB\n- Document: image hoặc PDF - max 10MB"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Company By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"company_id\", response.data.id);",
+                  "        pm.environment.set(\"company_name\", response.data.name);",
+                  "        console.log(\"✅ Company retrieved successfully\");",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}"]
+            },
+            "description": "Lấy thông tin company theo ID. ADMIN hoặc member của company sẽ thấy thêm 'members' và 'documentUrl'. User không phải member chỉ thấy thông tin cơ bản."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "TechCorp Vietnam Updated",
+                  "type": "text",
+                  "description": "Tên công ty (optional)"
+                },
+                {
+                  "key": "website",
+                  "value": "https://techcorp.vn/new",
+                  "type": "text",
+                  "description": "Website công ty (optional)"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated description",
+                  "type": "text",
+                  "description": "Mô tả công ty (optional)"
+                },
+                {
+                  "key": "industry",
+                  "value": "Software Development",
+                  "type": "text",
+                  "description": "Ngành nghề (optional)"
+                },
+                {
+                  "key": "companySize",
+                  "value": "LARGE",
+                  "type": "text",
+                  "description": "Quy mô công ty: STARTUP, SMALL, MEDIUM, LARGE, ENTERPRISE (optional)"
+                },
+                {
+                  "key": "foundedYear",
+                  "value": "2016",
+                  "type": "text",
+                  "description": "Năm thành lập (optional)"
+                },
+                {
+                  "key": "address",
+                  "value": "456 Updated Street, Ho Chi Minh City",
+                  "type": "text",
+                  "description": "Địa chỉ (optional)"
+                },
+                {
+                  "key": "phone",
+                  "value": "+84 28 9876 5432",
+                  "type": "text",
+                  "description": "Số điện thoại (optional)"
+                },
+                {
+                  "key": "email",
+                  "value": "newcontact@techcorp.vn",
+                  "type": "text",
+                  "description": "Email công ty (optional)"
+                },
+                {
+                  "key": "logo",
+                  "type": "file",
+                  "src": [],
+                  "description": "Logo công ty mới (image file - optional, max 5MB). Nếu không upload, logo cũ sẽ giữ nguyên."
+                },
+                {
+                  "key": "banner",
+                  "type": "file",
+                  "src": [],
+                  "description": "Banner công ty mới (image file - optional, max 5MB). Nếu không upload, banner cũ sẽ giữ nguyên."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}"]
+            },
+            "description": "Cập nhật thông tin company với khả năng upload logo và banner mới. Yêu cầu OWNER hoặc MANAGER role.\n\n**Lưu ý:**\n- Tất cả fields đều optional\n- Logo và Banner: image file (JPEG, PNG, WebP) - max 5MB mỗi file\n- Nếu upload logo/banner mới, file cũ sẽ tự động bị xóa\n- Nếu không upload, file cũ sẽ giữ nguyên"
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Logo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Logo uploaded successfully\");",
+                  "        console.log(\"Logo URL: \" + response.data.logoUrl);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "Logo image file (JPEG, PNG, WebP) - max 5MB. File sẽ tự động ghi đè logo cũ."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/logo",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "logo"]
+            },
+            "description": "Upload logo công ty. Yêu cầu OWNER, MANAGER, hoặc RECRUITER role.\n\n**Lưu ý:**\n- Chỉ cần upload file image\n- File sẽ tự động ghi đè logo cũ (dùng companyId làm tên file)\n- Image file: JPEG, PNG, WebP - max 5MB"
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Banner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Banner uploaded successfully\");",
+                  "        console.log(\"Banner URL: \" + response.data.bannerUrl);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "Banner image file (JPEG, PNG, WebP) - max 5MB. File sẽ tự động ghi đè banner cũ."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/banner",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "banner"]
+            },
+            "description": "Upload banner công ty. Yêu cầu OWNER, MANAGER, hoặc RECRUITER role.\n\n**Lưu ý:**\n- Chỉ cần upload file image\n- File sẽ tự động ghi đè banner cũ (dùng companyId làm tên file)\n- Image file: JPEG, PNG, WebP - max 5MB"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Company",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}"]
+            },
+            "description": "Xóa company. Yêu cầu ADMIN hoặc OWNER role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Companies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/companies?page=1&limit=10&status=ACTIVE&search=&orderBy=createdAt:desc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "description": "Optional: ACTIVE, INACTIVE, LOCKED, PENDING, SUSPENDED"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Optional: search by name, industry, description"
+                },
+                {
+                  "key": "orderBy",
+                  "value": "createdAt:desc"
+                }
+              ]
+            },
+            "description": "Lấy danh sách tất cả companies với pagination (public). Response list không bao gồm 'members' và 'documentUrl' để đảm bảo an toàn dữ liệu."
+          },
+          "response": []
+        }
+      ],
+      "description": "Các API quản lý company"
+    },
+    {
+      "name": "Admin - Company Approval",
+      "item": [
+        {
+          "name": "Approve Company",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Company approved successfully\");",
+                  "        console.log(\"Company Status: \" + response.data.status);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "approve"]
+            },
+            "description": "Duyệt company registration (Admin only). Status sẽ được set thành ACTIVE."
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Company",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Company rejected\");",
+                  "        console.log(\"Company Status: \" + response.data.status);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/reject",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "reject"]
+            },
+            "description": "Từ chối company registration (Admin only). Status sẽ được set thành SUSPENDED."
+          },
+          "response": []
+        }
+      ],
+      "description": "Các API duyệt/từ chối company (Admin only)"
+    },
+    {
+      "name": "Company Members",
+      "item": [
+        {
+          "name": "List Members",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.length > 0) {",
+                  "        // Lưu member_id của member đầu tiên để test",
+                  "        pm.environment.set(\"member_id\", response.data[0].id);",
+                  "        console.log(\"✅ Members retrieved successfully\");",
+                  "        console.log(\"Total members: \" + response.data.length);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/members",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "members"]
+            },
+            "description": "Lấy danh sách tất cả members của company. Yêu cầu là member của company."
+          },
+          "response": []
+        },
+        {
+          "name": "List Invitations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data && response.data.length > 0) {",
+                  "        pm.environment.set(\"invitation_id\", response.data[0].id);",
+                  "        console.log(\"✅ Invitations retrieved successfully\");",
+                  "        console.log(\"Total invitations: \" + response.data.length);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/members/invitations?status=PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "members", "invitations"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "description": "Filter by status: PENDING, ACCEPTED, REJECTED, CANCELLED, EXPIRED (optional)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Lấy danh sách invitations của company. Yêu cầu là member của company. Có thể filter theo status (optional)."
+          },
+          "response": []
+        },
+        {
+          "name": "Invite Member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"invitation_id\", response.data.invitation.id);",
+                  "        pm.environment.set(\"invited_user_email\", response.data.user.email);",
+                  "        pm.environment.set(\"invited_user_id\", response.data.user.id);",
+                  "        console.log(\"✅ Member invitation sent successfully\");",
+                  "        console.log(\"Invitation ID: \" + response.data.invitation.id);",
+                  "        console.log(\"Invited User: \" + response.data.user.email);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{invited_user_email}}\",\n    \"role\": \"RECRUITER\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/members/invite",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "members", "invite"]
+            },
+            "description": "Mời user vào company. Yêu cầu OWNER hoặc MANAGER role. Company phải có status ACTIVE."
+          },
+          "response": []
+        },
+        {
+          "name": "Accept Invitation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        pm.environment.set(\"member_id\", response.data.id);",
+                  "        console.log(\"✅ Invitation accepted successfully\");",
+                  "        console.log(\"Member ID: \" + response.data.id);",
+                  "        console.log(\"Role: \" + response.data.companyRole);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/api/companies/invitations/{{invitation_id}}/accept",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "invitations", "{{invitation_id}}", "accept"]
+            },
+            "description": "Chấp nhận invitation. User được mời phải đăng nhập và dùng token của chính họ.\n\n**Lưu ý:** Không cần cung cấp companyId và role trong body nữa vì đã được lưu trong CompanyMemberInvitation."
+            },
+          "response": []
+        },
+        {
+          "name": "Reject Invitation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('success');",
+                  "    pm.expect(response.success).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    console.log(\"✅ Invitation rejected successfully\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/invitations/{{invitation_id}}/reject",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "invitations", "{{invitation_id}}", "reject"]
+            },
+            "description": "Từ chối invitation. User được mời phải đăng nhập và dùng token của chính họ.\n\n**Hành vi:**\n- Cập nhật invitation status = REJECTED (giữ lại bản ghi cho history)\n- Gửi notification cho người mời (inviter) biết bị từ chối\n- Đánh dấu notification gốc đã đọc"
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Invitation",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/members/invitations/{{invitation_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "members", "invitations", "{{invitation_id}}"]
+            },
+            "description": "Hủy invitation. OWNER/MANAGER của company hoặc user được mời có thể hủy."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Member Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data) {",
+                  "        console.log(\"✅ Member role updated successfully\");",
+                  "        console.log(\"New Role: \" + response.data.companyRole);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"role\": \"MANAGER\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/members/{{member_id}}/role",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "members", "{{member_id}}", "role"]
+            },
+            "description": "Cập nhật role của member. OWNER có thể update bất kỳ ai. MANAGER chỉ có thể update RECRUITER/VIEWER. Không thể thay đổi role của OWNER."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Member",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/companies/{{company_id}}/members/{{member_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "companies", "{{company_id}}", "members", "{{member_id}}"]
+            },
+            "description": "Xóa member khỏi company. OWNER hoặc MANAGER có thể xóa. Không thể xóa OWNER. MANAGER không thể xóa MANAGER khác."
+          },
+          "response": []
+        }
+      ],
+      "description": "Các API quản lý company members"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-refresh token nếu hết hạn",
+          "const token = pm.environment.get(\"auth_token\");",
+          "if (token) {",
+          "    try {",
+          "        // Decode JWT để check expiry (không verify signature)",
+          "        const payload = JSON.parse(atob(token.split('.')[1]));",
+          "        const exp = payload.exp * 1000; // Convert to milliseconds",
+          "        const now = Date.now();",
+          "        ",
+          "        // Nếu token sắp hết hạn trong 5 phút tới, tự động login lại",
+          "        if (exp - now < 5 * 60 * 1000) {",
+          "            console.log(\"⚠️ Token sắp hết hạn, tự động refresh...\");",
+          "            ",
+          "            // Gọi login API để lấy token mới",
+          "            pm.sendRequest({",
+          "                url: pm.environment.get(\"base_url\") + \"/api/users/login\",",
+          "                method: 'POST',",
+          "                header: {",
+          "                    'Content-Type': 'application/json'",
+          "                },",
+          "                body: {",
+          "                    mode: 'raw',",
+          "                    raw: JSON.stringify({",
+          "                        email: pm.environment.get(\"test_email\"),",
+          "                        password: pm.environment.get(\"test_password\")",
+          "                    })",
+          "                }",
+          "            }, function (err, res) {",
+          "                if (!err && res.code === 200) {",
+          "                    const response = res.json();",
+          "                    if (response.success && response.data && response.data.token) {",
+          "                        pm.environment.set(\"auth_token\", response.data.token);",
+          "                        console.log(\"✅ Token đã được refresh tự động\");",
+          "                    }",
+          "                }",
+          "            });",
+          "        }",
+          "    } catch (e) {",
+          "        console.log(\"⚠️ Không thể check token expiry: \" + e.message);",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "pm.test(\"Response time is less than 5000ms\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "// Check response format",
+          "if (pm.response.code !== 204) {",
+          "    try {",
+          "        const jsonData = pm.response.json();",
+          "        pm.test(\"Response has success field\", function () {",
+          "            pm.expect(jsonData).to.have.property('success');",
+          "        });",
+          "    } catch (e) {",
+          "        // Not JSON response, skip",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    }
+  ]
+}
+
